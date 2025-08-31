@@ -1,6 +1,35 @@
 import { Play, Heart, MoreHorizontal } from 'lucide-react';
 
-const MusicSection = ({ title, items, type = 'playlist' }) => {
+interface PlaylistItem {
+  id: number;
+  title: string;
+  image: string;
+  songCount: number;
+}
+
+interface AlbumItem {
+  id: number;
+  title: string;
+  artist: string;
+  image: string;
+}
+
+interface SongItem {
+  id: number;
+  title: string;
+  artist: string;
+  image: string;
+}
+
+type MusicItem = PlaylistItem | AlbumItem | SongItem;
+
+interface MusicSectionProps {
+  title: string;
+  items: MusicItem[];
+  type?: 'playlist' | 'album' | 'song';
+}
+
+const MusicSection: React.FC<MusicSectionProps> = ({ title, items, type = 'playlist' }) => {
   return (
     <section className="mb-12">
       <h2 className="section-title">{title}</h2>
@@ -24,7 +53,7 @@ const MusicSection = ({ title, items, type = 'playlist' }) => {
                 {item.title}
               </h3>
               <p className="text-spotify-text-secondary text-xs truncate">
-                {type === 'playlist' ? `${item.songCount} songs` : item.artist}
+                {type === 'playlist' ? `${(item as PlaylistItem).songCount} songs` : (item as AlbumItem | SongItem).artist}
               </p>
             </div>
             
@@ -43,4 +72,4 @@ const MusicSection = ({ title, items, type = 'playlist' }) => {
   );
 };
 
-export default MusicSection; 
+export default MusicSection;

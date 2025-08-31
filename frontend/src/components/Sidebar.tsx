@@ -9,24 +9,35 @@ import {
   Settings,
   LogOut,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  LucideIcon
 } from 'lucide-react';
-import { useState } from 'react';
 
-const Sidebar = ({ isCollapsed, onToggle }) => {
-  const navigationItems = [
+interface SidebarProps {
+  isCollapsed: boolean;
+  onToggle: () => void;
+}
+
+interface NavigationItem {
+  icon: LucideIcon;
+  label: string;
+  active?: boolean;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
+  const navigationItems: NavigationItem[] = [
     { icon: Home, label: 'Home', active: true },
     { icon: Search, label: 'Search' },
     { icon: Library, label: 'Your Library' },
   ];
 
-  const libraryItems = [
+  const libraryItems: NavigationItem[] = [
     { icon: Plus, label: 'Create Playlist' },
     { icon: Heart, label: 'Liked Songs' },
     { icon: Download, label: 'Downloads' },
   ];
 
-  const userItems = [
+  const userItems: NavigationItem[] = [
     { icon: User, label: 'Profile' },
     { icon: Settings, label: 'Settings' },
     { icon: LogOut, label: 'Logout' },
@@ -114,4 +125,4 @@ const Sidebar = ({ isCollapsed, onToggle }) => {
   );
 };
 
-export default Sidebar; 
+export default Sidebar;

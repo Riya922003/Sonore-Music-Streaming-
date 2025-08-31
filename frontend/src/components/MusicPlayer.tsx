@@ -11,35 +11,41 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 
-const MusicPlayer = () => {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(100);
-  const [volume, setVolume] = useState(80);
+interface CurrentSong {
+  title: string;
+  artist: string;
+  image: string;
+}
 
-  const currentSong = {
+const MusicPlayer: React.FC = () => {
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [duration] = useState<number>(100);
+  const [volume, setVolume] = useState<number>(80);
+
+  const currentSong: CurrentSong = {
     title: "Blinding Lights",
     artist: "The Weeknd",
     image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=60&h=60&fit=crop"
   };
 
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handlePlayPause = () => {
+  const handlePlayPause = (): void => {
     setIsPlaying(!isPlaying);
   };
 
-  const handleProgressChange = (e) => {
-    const newTime = (e.target.value / 100) * duration;
+  const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const newTime = (parseInt(e.target.value) / 100) * duration;
     setCurrentTime(newTime);
   };
 
-  const handleVolumeChange = (e) => {
-    setVolume(e.target.value);
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    setVolume(parseInt(e.target.value));
   };
 
   return (
@@ -133,4 +139,4 @@ const MusicPlayer = () => {
   );
 };
 
-export default MusicPlayer; 
+export default MusicPlayer;

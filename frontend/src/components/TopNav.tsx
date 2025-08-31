@@ -1,6 +1,6 @@
 import { Search, Bell, User, ChevronLeft, ChevronRight } from 'lucide-react';
 
-const TopNav = () => {
+const TopNav: React.FC = () => {
   return (
     <div className="fixed top-0 right-0 left-64 bg-spotify-dark-gray/90 backdrop-blur-md z-10 px-8 py-4 border-b border-spotify-light-gray">
       <div className="flex items-center justify-between">
@@ -43,4 +43,4 @@ const TopNav = () => {
   );
 };
 
-export default TopNav; 
+export default TopNav;

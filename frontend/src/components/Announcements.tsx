@@ -1,10 +1,18 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Play } from 'lucide-react';
 
-const Announcements = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
+interface Announcement {
+  id: number;
+  title: string;
+  subtitle: string;
+  image: string;
+  color: string;
+}
 
-  const announcements = [
+const Announcements: React.FC = () => {
+  const [currentSlide, setCurrentSlide] = useState<number>(0);
+
+  const announcements: Announcement[] = [
     {
       id: 1,
       title: "New Album Release",
@@ -36,15 +44,15 @@ const Announcements = () => {
     return () => clearInterval(timer);
   }, [announcements.length]);
 
-  const nextSlide = () => {
+  const nextSlide = (): void => {
     setCurrentSlide((prev) => (prev + 1) % announcements.length);
   };
 
-  const prevSlide = () => {
+  const prevSlide = (): void => {
     setCurrentSlide((prev) => (prev - 1 + announcements.length) % announcements.length);
   };
 
-  const goToSlide = (index) => {
+  const goToSlide = (index: number): void => {
     setCurrentSlide(index);
   };
 
@@ -117,4 +125,4 @@ const Announcements = () => {
   );
 };
 
-export default Announcements; 
+export default Announcements;

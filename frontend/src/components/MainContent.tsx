@@ -1,9 +1,30 @@
 import Announcements from './Announcements';
 import MusicSection from './MusicSection';
 
-const MainContent = () => {
+interface PlaylistItem {
+  id: number;
+  title: string;
+  image: string;
+  songCount: number;
+}
+
+interface AlbumItem {
+  id: number;
+  title: string;
+  artist: string;
+  image: string;
+}
+
+interface SongItem {
+  id: number;
+  title: string;
+  artist: string;
+  image: string;
+}
+
+const MainContent: React.FC = () => {
   // Sample data - in a real app, this would come from your backend
-  const topPlaylists = [
+  const topPlaylists: PlaylistItem[] = [
     {
       id: 1,
       title: "Today's Top Hits",
@@ -36,7 +57,7 @@ const MainContent = () => {
     }
   ];
 
-  const newReleases = [
+  const newReleases: AlbumItem[] = [
     {
       id: 1,
       title: "Midnights",
@@ -69,7 +90,7 @@ const MainContent = () => {
     }
   ];
 
-  const recentlyPlayed = [
+  const recentlyPlayed: SongItem[] = [
     {
       id: 1,
       title: "Blinding Lights",
@@ -102,7 +123,7 @@ const MainContent = () => {
     }
   ];
 
-  const bigHits = [
+  const bigHits: SongItem[] = [
     {
       id: 1,
       title: "Flowers",
@@ -135,35 +156,35 @@ const MainContent = () => {
     }
   ];
 
-  const indiasBest = [
+  const indiasBest: PlaylistItem[] = [
     {
       id: 1,
       title: "Punjabi Hits",
-      artist: "Various Artists",
+      songCount: 25,
       image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop"
     },
     {
       id: 2,
       title: "Bollywood Classics",
-      artist: "Various Artists",
+      songCount: 40,
       image: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&h=300&fit=crop"
     },
     {
       id: 3,
       title: "Indie India",
-      artist: "Various Artists",
+      songCount: 30,
       image: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=300&h=300&fit=crop"
     },
     {
       id: 4,
       title: "Devotional Songs",
-      artist: "Various Artists",
+      songCount: 20,
       image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=300&fit=crop"
     },
     {
       id: 5,
       title: "Folk Fusion",
-      artist: "Various Artists",
+      songCount: 35,
       image: "https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=300&h=300&fit=crop"
     }
   ];
@@ -205,4 +226,4 @@ const MainContent = () => {
   );
 };
 
-export default MainContent; 
+export default MainContent;
