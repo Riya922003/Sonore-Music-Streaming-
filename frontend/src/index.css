@@ -26,30 +26,44 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem;
     font-size: 0.875rem;
     font-weight: 500;
-    color: #B3B3B3;
-    transition: all 0.2s;
+    color: #9CA3AF;
+    transition: all 0.2s ease;
     cursor: pointer;
-    border-radius: 0.375rem;
+    border-radius: 0.5rem;
     white-space: nowrap;
+    position: relative;
   }
   
   .sidebar-item:hover {
     color: #FFFFFF;
-    background-color: #1a1a1a;
+    background-color: #1F2937;
   }
   
   .sidebar-item.active {
     color: #FFFFFF;
-    background-color: #1a1a1a;
+    background-color: #1F2937;
+  }
+  
+  .sidebar-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background-color: #10B981;
+    border-radius: 0 2px 2px 0;
   }
   
   .sidebar-item.collapsed {
     justify-content: center;
     gap: 0;
-    padding: 0.5rem;
+    padding: 0.75rem;
+    width: 100%;
   }
   
   .music-card {
@@ -70,7 +84,7 @@
     position: absolute;
     bottom: 1rem;
     right: 1rem;
-    background-color: #1DB954;
+    background-color: #10B981;
     color: #000000;
     padding: 0.75rem;
     border-radius: 9999px;
@@ -110,5 +124,88 @@
     position: absolute;
     inset: 0;
     background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent, transparent);
+  }
+
+  /* Hide scrollbar for horizontal scrolling */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+  }
+
+  /* Hero section hover effects */
+  .hero-section {
+    background: linear-gradient(to right, #4B2E1A, #8B5A2B);
+    transition: all 0.3s ease;
+  }
+
+  .hero-section:hover {
+    background: linear-gradient(to right, #5D3B29, #A06A3A);
+  }
+
+  /* Card hover animations */
+  .card-hover-scale {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card-hover-scale:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Mobile responsive adjustments */
+  @media (max-width: 768px) {
+    .sidebar-desktop {
+      display: none;
+    }
+    
+    .main-content-mobile {
+      margin-left: 0 !important;
+    }
+    
+    .hero-section {
+      height: auto;
+      min-height: 200px;
+      padding: 1rem;
+    }
+    
+    .hero-cards {
+      gap: 0.75rem;
+    }
+    
+    .hero-card {
+      min-width: 120px;
+    }
+  }
+
+  /* Smooth animations for hero content */
+  .hero-content-enter {
+    animation: slideUpFadeIn 0.5s ease-out;
+  }
+
+  @keyframes slideUpFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Backdrop blur support for older browsers */
+  .backdrop-blur-fallback {
+    background-color: rgba(0, 0, 0, 0.3);
+  }
+
+  @supports (backdrop-filter: blur(10px)) {
+    .backdrop-blur-fallback {
+      background-color: rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+    }
   }
 }

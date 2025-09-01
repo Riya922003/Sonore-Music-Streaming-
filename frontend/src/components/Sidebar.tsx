@@ -44,78 +44,91 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   ];
 
   return (
-    <div className={`${isCollapsed ? 'w-20' : 'w-64'} bg-spotify-black h-screen fixed left-0 top-0 p-6 overflow-y-auto transition-all duration-300 ease-in-out`}>
-      {/* Logo */}
-      <div className="mb-8 flex items-center justify-between">
+    <div className={`${
+      isCollapsed ? 'w-16' : 'w-64'
+    } bg-black border-r border-gray-800 h-screen fixed left-0 top-0 z-30 overflow-hidden transition-all duration-300 ease-in-out flex flex-col`}>
+      
+      {/* Logo and Toggle Button */}
+      <div className="p-4 border-b border-gray-800 flex items-center justify-between min-h-[80px]">
         {!isCollapsed && (
-          <div>
-            <h1 className="text-2xl font-bold text-spotify-green">Sonore</h1>
-            <p className="text-spotify-text-secondary text-sm">Music Streaming</p>
+          <div className="flex-1">
+            <h1 className="text-xl font-bold text-green-500">Sonore</h1>
+            <p className="text-gray-400 text-xs">Music Streaming</p>
           </div>
         )}
         <button
           onClick={onToggle}
-          className="text-spotify-text-secondary hover:text-spotify-content transition-colors duration-200 p-2 rounded-full hover:bg-spotify-light-gray"
+          className="text-gray-400 hover:text-white transition-colors duration-200 p-2 rounded-lg hover:bg-gray-800 flex-shrink-0"
+          title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
         </button>
       </div>
 
-      {/* Navigation */}
-      <nav className="mb-8">
-        <ul className="space-y-2">
-          {navigationItems.map((item) => (
-            <li key={item.label}>
-              <div 
-                className={`sidebar-item ${item.active ? 'active' : ''} ${isCollapsed ? 'collapsed' : ''}`}
-                title={isCollapsed ? item.label : ''}
-              >
-                <item.icon size={20} className="text-spotify-text-secondary" />
-                {!isCollapsed && item.label}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto px-2 py-4">
+        {/* Navigation */}
+        <nav className="mb-6">
+          <ul className="space-y-1">
+            {navigationItems.map((item) => (
+              <li key={item.label}>
+                <div 
+                  className={`sidebar-item group ${item.active ? 'active' : ''} ${isCollapsed ? 'collapsed' : ''}`}
+                  title={isCollapsed ? item.label : ''}
+                >
+                  <item.icon size={20} className="flex-shrink-0" />
+                  {!isCollapsed && (
+                    <span className="truncate">{item.label}</span>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
-      {/* Library */}
-      <div className="mb-8">
-        {!isCollapsed && (
-          <h3 className="text-spotify-text-secondary text-xs font-semibold uppercase tracking-wider mb-4">
-            Library
-          </h3>
-        )}
-        <ul className="space-y-2">
-          {libraryItems.map((item) => (
-            <li key={item.label}>
-              <div 
-                className={`sidebar-item ${isCollapsed ? 'collapsed' : ''}`}
-                title={isCollapsed ? item.label : ''}
-              >
-                <item.icon size={20} className="text-spotify-text-secondary" />
-                {!isCollapsed && item.label}
-              </div>
-            </li>
-          ))}
-        </ul>
+        {/* Library */}
+        <div className="mb-6">
+          {!isCollapsed && (
+            <h3 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3 px-3">
+              Library
+            </h3>
+          )}
+          <ul className="space-y-1">
+            {libraryItems.map((item) => (
+              <li key={item.label}>
+                <div 
+                  className={`sidebar-item group ${isCollapsed ? 'collapsed' : ''}`}
+                  title={isCollapsed ? item.label : ''}
+                >
+                  <item.icon size={20} className="flex-shrink-0" />
+                  {!isCollapsed && (
+                    <span className="truncate">{item.label}</span>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
-      {/* User */}
-      <div className="mt-auto">
+      {/* User Section - Pinned to bottom */}
+      <div className="p-2 border-t border-gray-800">
         {!isCollapsed && (
-          <h3 className="text-spotify-text-secondary text-xs font-semibold uppercase tracking-wider mb-4">
+          <h3 className="text-gray-400 text-xs font-semibold uppercase tracking-wider mb-3 px-3">
             User
           </h3>
         )}
-        <ul className="space-y-2">
+        <ul className="space-y-1">
           {userItems.map((item) => (
             <li key={item.label}>
               <div 
-                className={`sidebar-item ${isCollapsed ? 'collapsed' : ''}`}
+                className={`sidebar-item group ${isCollapsed ? 'collapsed' : ''}`}
                 title={isCollapsed ? item.label : ''}
               >
-                <item.icon size={20} className="text-spotify-text-secondary" />
-                {!isCollapsed && item.label}
+                <item.icon size={20} className="flex-shrink-0" />
+                {!isCollapsed && (
+                  <span className="truncate">{item.label}</span>
+                )}
               </div>
             </li>
           ))}

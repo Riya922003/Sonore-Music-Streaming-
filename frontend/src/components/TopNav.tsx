@@ -1,41 +1,52 @@
-import { Search, Bell, User, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Bell, Home, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 
-const TopNav: React.FC = () => {
+interface TopNavProps {
+  isSidebarCollapsed: boolean;
+}
+
+const TopNav: React.FC<TopNavProps> = ({ isSidebarCollapsed }) => {
   return (
-    <div className="fixed top-0 right-0 left-64 bg-spotify-dark-gray/90 backdrop-blur-md z-10 px-8 py-4 border-b border-spotify-light-gray">
-      <div className="flex items-center justify-between">
-        {/* Navigation Controls */}
+    <div className={`fixed top-0 right-0 bg-black/95 backdrop-blur-md z-20 px-6 py-4 transition-all duration-300 ease-in-out ${
+      isSidebarCollapsed ? 'left-16' : 'left-64'
+    }`}>
+      <div className="flex items-center justify-between max-w-full">
+        {/* Left Navigation */}
         <div className="flex items-center gap-4">
-          <button className="bg-spotify-black p-2 rounded-full hover:bg-spotify-light-gray transition-colors duration-200 text-spotify-content">
+          <button className="text-gray-400 hover:text-white transition-colors duration-200 p-2 rounded-lg hover:bg-gray-800">
             <ChevronLeft size={20} />
           </button>
-          <button className="bg-spotify-black p-2 rounded-full hover:bg-spotify-light-gray transition-colors duration-200 text-spotify-content">
+          <button className="text-gray-400 hover:text-white transition-colors duration-200 p-2 rounded-lg hover:bg-gray-800">
             <ChevronRight size={20} />
+          </button>
+          <button className="bg-gray-800 text-white p-2 rounded-lg hover:bg-gray-700 transition-colors duration-200">
+            <Home size={20} />
           </button>
         </div>
 
-        {/* Search Bar */}
+        {/* Search Bar - Centered */}
         <div className="flex-1 max-w-md mx-8">
           <div className="relative">
-            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-spotify-text-secondary" />
+            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Search for songs, artists, or playlists..."
-              className="w-full bg-spotify-light-gray text-spotify-content placeholder-spotify-text-secondary px-10 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-spotify-green"
+              placeholder="What do you want to play?"
+              className="w-full bg-gray-800 text-white placeholder-gray-400 px-10 py-3 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-200"
             />
           </div>
         </div>
 
-        {/* User Actions */}
-        <div className="flex items-center gap-4">
-          <button className="text-spotify-text-secondary hover:text-spotify-content transition-colors duration-200">
+        {/* Right Actions */}
+        <div className="flex items-center gap-3">
+          <button className="text-gray-400 hover:text-white transition-colors duration-200 p-2 rounded-lg hover:bg-gray-800">
             <Bell size={20} />
           </button>
-          <button className="flex items-center gap-2 bg-spotify-light-gray px-3 py-2 rounded-full hover:bg-spotify-black transition-colors duration-200">
-            <div className="w-6 h-6 bg-spotify-green rounded-full flex items-center justify-center">
-              <User size={14} className="text-spotify-black" />
+          <button className="text-gray-400 hover:text-white transition-colors duration-200 p-2 rounded-lg hover:bg-gray-800">
+            <Settings size={20} />
+          </button>
+          <button className="flex items-center gap-2 bg-gray-800 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-200 border border-gray-700">
+            <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
+              R
             </div>
-            <span className="text-sm font-medium text-spotify-content">User</span>
           </button>
         </div>
       </div>
