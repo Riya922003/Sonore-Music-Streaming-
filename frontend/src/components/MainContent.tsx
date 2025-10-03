@@ -1,12 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Play, ChevronRight } from 'lucide-react';
 import MusicCard from './MusicCard';
+import apiClient from '../api';
 
 interface MadeForYouItem {
   id: number;
   title: string;
   artist: string;
   image: string;
+}
+
+// Define a type for your song data for TypeScript
+interface Song {
+  _id: string;
+  title: string;
+  artist: string;
+  url: string;
+  album?: string;
+  duration?: number;
+  coverImage?: string;
 }
 
 interface MainContentProps {
@@ -21,6 +33,26 @@ const MainContent: React.FC<MainContentProps> = ({
   onHideAnnouncements 
 }) => {
   const [isHeroHovered, setIsHeroHovered] = useState(false);
+  const [songs, setSongs] = useState<Song[]>([]);
+  const [isLoadingSongs, setIsLoadingSongs] = useState(false);
+
+  useEffect(() => {
+    const fetchSongs = async () => {
+      try {
+        setIsLoadingSongs(true);
+        // Use the apiClient to make the request
+        const response = await apiClient.get('/songs');
+        setSongs(response.data.songs || response.data || []);
+      } catch (error) {
+        console.error("Failed to fetch songs:", error);
+        setSongs([]); // Set empty array on error
+      } finally {
+        setIsLoadingSongs(false);
+      }
+    };
+
+    fetchSongs();
+  }, []); // The empty array ensures this runs only once when the component mounts
 
   // Default "Made For You" data matching the image
   const defaultMadeForYou: MadeForYouItem[] = madeForYouItems || [
@@ -224,6 +256,57 @@ const MainContent: React.FC<MainContentProps> = ({
             </div>
           ))}
         </div>
+      </section>
+
+      {/* All Songs Section - Fetched from Backend */}
+      <section className="mt-12">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-white">All Songs</h2>
+          {isLoadingSongs && (
+            <span className="text-gray-400 text-sm">Loading songs...</span>
+          )}
+        </div>
+        
+        {songs.length > 0 ? (
+          <div className="space-y-2">
+            {songs.map((song, index) => (
+              <div
+                key={song._id}
+                className="flex items-center p-3 rounded-lg hover:bg-gray-800/50 transition-all duration-200 group cursor-pointer"
+              >
+                <div className="flex items-center flex-1">
+                  <span className="text-gray-400 text-sm w-8 text-center group-hover:hidden">
+                    {index + 1}
+                  </span>
+                  <button className="text-white w-8 text-center hidden group-hover:block hover:scale-110 transition-all">
+                    <Play size={16} fill="currentColor" />
+                  </button>
+                  <div className="ml-4 flex-1">
+                    <div className="text-white font-medium text-sm">{song.title}</div>
+                    <div className="text-gray-400 text-xs">{song.artist}</div>
+                  </div>
+                  {song.album && (
+                    <div className="text-gray-400 text-xs mr-4 hidden md:block">
+                      {song.album}
+                    </div>
+                  )}
+                  {song.duration && (
+                    <div className="text-gray-400 text-xs">
+                      {Math.floor(song.duration / 60)}:{(song.duration % 60).toString().padStart(2, '0')}
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          !isLoadingSongs && (
+            <div className="text-gray-400 text-center py-8">
+              <p>No songs available at the moment.</p>
+              <p className="text-xs mt-2">Check your backend connection or add some songs to your database.</p>
+            </div>
+          )
+        )}
       </section>
     </div>
   );
