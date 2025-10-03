@@ -9,7 +9,7 @@ const app = express();
 // This list defines which frontend URLs are allowed to make requests to your API.
 const allowedOrigins = [
   'http://localhost:5173', // Your local frontend for development
-  'https://your-sonore-frontend.vercel.app' // IMPORTANT: REPLACE WITH YOUR VERCEL URL
+  'https://sonore-music-streaming-g72op0mk1-riya922003s-projects.vercel.app/' // IMPORTANT: REPLACE WITH YOUR VERCEL URL
 ];
 
 app.use(cors({
