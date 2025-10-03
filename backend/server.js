@@ -36,4 +36,27 @@ const playlistsRouter = require('./routes/playlists');
 
 // Use routes
 app.use('/api/auth', authRouter);
-app.use('/api/songs',
+// --- THIS LINE WAS INCOMPLETE ---
+app.use('/api/songs', songsRouter); // FIXED
+// ---------------------------------
+app.use('/api/playlists', playlistsRouter);
+
+// Basic route
+app.get('/', (req, res) => {
+  res.json({ message: 'Sonore Music Streaming API is running!' });
+});
+
+const PORT = process.env.PORT || 5000;
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('✅ Connected to MongoDB successfully!');
+    app.listen(PORT, () => {
+      console.log(`🚀 Server is running on port ${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('❌ MongoDB connection error:', error);
+    process.exit(1);
+  });
