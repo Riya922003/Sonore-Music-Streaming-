@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "tsc",
-    "start": "node server.js"
-    // "start": "node dist/server.js",
+    "start": "node dist/server.js",
     "dev": "nodemon src/server.ts"
   },
   "dependencies": {
