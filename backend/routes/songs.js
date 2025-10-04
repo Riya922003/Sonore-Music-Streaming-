@@ -2,7 +2,7 @@ const express = require('express');
 const Song = require('../models/Song');
 const authMiddleware = require('../middleware/authMiddleware');
 const upload = require('../middleware/multer.js'); // Import the instance directly
-const cloudinary = require('cloudinary').v2;
+const cloudinary = require('../config/cloudinaryConfig');
 
 const router = express.Router();
 
@@ -14,6 +14,28 @@ router.get('/', async (req, res) => {
   } catch (error) {
     console.error('Get songs error:', error);
     res.status(500).json({ success: false, message: "Server error occurred while fetching songs." });
+  }
+});
+
+// Test route to check Cloudinary configuration
+router.get('/test-config', (req, res) => {
+  try {
+    const config = cloudinary.config();
+    res.json({
+      success: true,
+      message: 'Cloudinary configuration test',
+      hasCloudName: !!config.cloud_name,
+      hasApiKey: !!config.api_key,
+      hasApiSecret: !!config.api_secret,
+      cloudName: config.cloud_name // Safe to show cloud name
+    });
+  } catch (error) {
+    console.error('Config test error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Cloudinary configuration error',
+      error: error.message
+    });
   }
 });
 
