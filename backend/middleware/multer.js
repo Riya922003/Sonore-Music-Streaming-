@@ -3,7 +3,7 @@ const multer = require('multer');
 // Configure multer to use memory storage
 const storage = multer.memoryStorage();
 
-// Create multer instance with memory storage configuration
+// Create multer instance with memory storage configuration for two fields
 const upload = multer({
   storage: storage,
   limits: {
@@ -19,5 +19,10 @@ const upload = multer({
   }
 });
 
-// CORRECTED LINE: Export the middleware directly
-module.exports = upload;
+// Export a middleware that handles two fields: 'song' and 'thumbnail'
+module.exports = {
+  upload: upload.fields([
+    { name: 'song', maxCount: 1 },
+    { name: 'thumbnail', maxCount: 1 }
+  ])
+};

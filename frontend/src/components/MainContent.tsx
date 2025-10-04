@@ -16,9 +16,10 @@ interface Song {
   title: string;
   artist: string;
   url: string;
+  thumbnail: string;
   album?: string;
   duration?: number;
-  coverImage?: string;
+  genre?: string;
 }
 
 interface MainContentProps {
@@ -37,12 +38,12 @@ const MainContent: React.FC<MainContentProps> = ({
   const [isLoadingSongs, setIsLoadingSongs] = useState(false);
 
   useEffect(() => {
-    const fetchSongs = async () => {
+    const fetchAllSongs = async () => {
       try {
         setIsLoadingSongs(true);
-        // Use the apiClient to make the request
+        // Use our central apiClient to make the request
         const response = await apiClient.get('/songs');
-        setSongs(response.data.songs || response.data || []);
+        setSongs(response.data.songs || []);
       } catch (error) {
         console.error("Failed to fetch songs:", error);
         setSongs([]); // Set empty array on error
@@ -51,7 +52,7 @@ const MainContent: React.FC<MainContentProps> = ({
       }
     };
 
-    fetchSongs();
+    fetchAllSongs();
   }, []); // The empty array ensures this runs only once when the component mounts
 
   // Default "Made For You" data matching the image
@@ -267,45 +268,42 @@ const MainContent: React.FC<MainContentProps> = ({
           )}
         </div>
         
-        {songs.length > 0 ? (
-          <div className="space-y-2">
-            {songs.map((song, index) => (
-              <div
-                key={song._id}
-                className="flex items-center p-3 rounded-lg hover:bg-gray-800/50 transition-all duration-200 group cursor-pointer"
+        {isLoadingSongs ? (
+          <div className="text-white text-center py-8">Loading songs...</div>
+        ) : songs.length > 0 ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+            {songs.map((song) => (
+              <div 
+                key={song._id} 
+                className="bg-gray-800 p-4 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer group"
               >
-                <div className="flex items-center flex-1">
-                  <span className="text-gray-400 text-sm w-8 text-center group-hover:hidden">
-                    {index + 1}
-                  </span>
-                  <button className="text-white w-8 text-center hidden group-hover:block hover:scale-110 transition-all">
+                <div className="relative mb-4">
+                  <img 
+                    src={song.thumbnail} 
+                    alt={song.title} 
+                    className="w-full h-auto rounded-md mb-2 aspect-square object-cover" 
+                    onError={(e) => {
+                      // Fallback image if thumbnail fails to load
+                      e.currentTarget.src = 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=150&h=150&fit=crop';
+                    }}
+                  />
+                  <button className="absolute bottom-2 right-2 bg-green-500 text-black p-3 rounded-full opacity-0 group-hover:opacity-100 hover:scale-110 transition-all duration-200 shadow-lg">
                     <Play size={16} fill="currentColor" />
                   </button>
-                  <div className="ml-4 flex-1">
-                    <div className="text-white font-medium text-sm">{song.title}</div>
-                    <div className="text-gray-400 text-xs">{song.artist}</div>
-                  </div>
-                  {song.album && (
-                    <div className="text-gray-400 text-xs mr-4 hidden md:block">
-                      {song.album}
-                    </div>
-                  )}
-                  {song.duration && (
-                    <div className="text-gray-400 text-xs">
-                      {Math.floor(song.duration / 60)}:{(song.duration % 60).toString().padStart(2, '0')}
-                    </div>
-                  )}
                 </div>
+                <h3 className="font-semibold truncate text-white mb-1">{song.title}</h3>
+                <p className="text-sm text-gray-400 truncate">{song.artist}</p>
+                {song.album && (
+                  <p className="text-xs text-gray-500 truncate mt-1">{song.album}</p>
+                )}
               </div>
             ))}
           </div>
         ) : (
-          !isLoadingSongs && (
-            <div className="text-gray-400 text-center py-8">
-              <p>No songs available at the moment.</p>
-              <p className="text-xs mt-2">Check your backend connection or add some songs to your database.</p>
-            </div>
-          )
+          <div className="text-gray-400 text-center py-8">
+            <p>No songs available at the moment.</p>
+            <p className="text-xs mt-2">Check your backend connection or add some songs to your database.</p>
+          </div>
         )}
       </section>
     </div>

@@ -1,7 +1,7 @@
 const express = require('express');
 const Song = require('../models/Song');
 const authMiddleware = require('../middleware/authMiddleware');
-const upload = require('../middleware/multer');
+const { upload } = require('../middleware/multer');
 const cloudinary = require('../config/cloudinaryConfig');
 
 const router = express.Router();
@@ -28,61 +28,100 @@ router.get('/', async (req, res) => {
 });
 
 // POST /upload route - Upload a new song (Protected route)
-router.post('/upload', authMiddleware, upload.single('song'), async (req, res) => {
+router.post('/upload', authMiddleware, upload, async (req, res) => {
   try {
-    if (!req.file) {
+    // Check if both song and thumbnail files were uploaded
+    if (!req.files || !req.files.song || !req.files.thumbnail) {
       return res.status(400).json({
         success: false,
-        message: "No file uploaded. Please select an audio file."
+        message: "Both song and thumbnail files are required."
       });
     }
 
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        resource_type: 'video', // Correct for audio
-        folder: 'sonore/songs'
-      },
-      async (error, result) => {
-        if (error) {
-          console.error('Cloudinary upload error:', error);
-          return res.status(500).json({
-            success: false,
-            message: "Failed to upload file to cloud storage."
-          });
-        }
+    const songFile = req.files.song[0];
+    const thumbnailFile = req.files.thumbnail[0];
 
-        try {
-          const newSong = new Song({
-            title: req.body.title,
-            artist: req.body.artist,
-            album: req.body.album,
-            genre: req.body.genre,
-            duration: parseInt(req.body.duration),
-            url: result.secure_url,
-            thumbnail: '', // Leave empty or handle image upload separately
-            // 2. CORRECTED: Get user ID from req.user.id
-            uploadedBy: req.user.id 
-          });
+    try {
+      // Create promises for both Cloudinary uploads
+      const songUploadPromise = new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            resource_type: 'video', // For audio files
+            folder: 'sonore/songs'
+          },
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
+          }
+        );
+        uploadStream.end(songFile.buffer);
+      });
 
-          const savedSong = await newSong.save();
+      const thumbnailUploadPromise = new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: 'sonore/thumbnails'
+          },
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
+          }
+        );
+        uploadStream.end(thumbnailFile.buffer);
+      });
 
-          res.status(201).json({
-            success: true,
-            message: "Song uploaded successfully!",
-            song: savedSong
-          });
+      // Execute both uploads concurrently
+      const [songResult, thumbnailResult] = await Promise.all([
+        songUploadPromise,
+        thumbnailUploadPromise
+      ]);
 
-        } catch (dbError) {
-          console.error('Database save error:', dbError);
-          res.status(500).json({
-            success: false,
-            message: "Failed to save song to database."
-          });
-        }
+      // Destructure secure_url from each result
+      const { secure_url: songUrl } = songResult;
+      const { secure_url: thumbnailUrl } = thumbnailResult;
+
+      try {
+        // Create new Song instance with both URLs
+        const newSong = new Song({
+          title: req.body.title,
+          artist: req.body.artist,
+          album: req.body.album,
+          genre: req.body.genre,
+          duration: parseInt(req.body.duration),
+          url: songUrl,
+          thumbnail: thumbnailUrl,
+          uploadedBy: req.user.id
+        });
+
+        const savedSong = await newSong.save();
+
+        res.status(201).json({
+          success: true,
+          message: "Song uploaded successfully!",
+          song: savedSong
+        });
+
+      } catch (dbError) {
+        console.error('Database save error:', dbError);
+        res.status(500).json({
+          success: false,
+          message: "Failed to save song to database."
+        });
       }
-    );
 
-    uploadStream.end(req.file.buffer);
+    } catch (uploadError) {
+      console.error('Cloudinary upload error:', uploadError);
+      res.status(500).json({
+        success: false,
+        message: "Failed to upload files to cloud storage."
+      });
+    }
 
   } catch (error) {
     console.error('Upload route error:', error);
