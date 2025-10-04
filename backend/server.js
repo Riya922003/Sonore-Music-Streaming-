@@ -5,40 +5,33 @@ require('dotenv').config();
 
 const app = express();
 
-// --- START: SECURE CORS CONFIGURATION ---
-const allowedOrigins = [
-  'http://localhost:5173', // Local development (Vite)
-  'http://localhost:3000', // Local development (alternative)
-  'https://sonore-music-streaming-one.vercel.app', // Your Vercel frontend
-];
-
+// --- START: DEBUG CORS CONFIGURATION ---
+// Temporary configuration to debug and allow all origins
 app.use(cors({
   origin: function(origin, callback){
-    console.log(`🔍 CORS request from origin: ${origin}`);
+    console.log(`🔍 CORS DEBUG - Request from origin: "${origin}"`);
+    console.log(`🔍 CORS DEBUG - Origin type: ${typeof origin}`);
+    console.log(`🔍 CORS DEBUG - Origin length: ${origin ? origin.length : 'null'}`);
     
-    // Allow requests with no origin (mobile apps, Postman, server-to-server)
-    if(!origin) {
-      console.log(`✅ CORS allowed: No origin specified`);
-      return callback(null, true);
+    // For debugging: Log the exact origin and allow everything temporarily
+    if(origin) {
+      console.log(`🔍 CORS DEBUG - Origin bytes: ${JSON.stringify([...origin].map(c => c.charCodeAt(0)))}`);
     }
     
-    // Check if origin is in allowed list
-    if(allowedOrigins.includes(origin)){
-      console.log(`✅ CORS allowed: ${origin}`);
-      return callback(null, true);
-    }
-    
-    // Block unauthorized origins
-    console.log(`❌ CORS blocked: ${origin}`);
-    console.log(`✅ Allowed origins:`, allowedOrigins);
-    const msg = `CORS policy does not allow access from origin: ${origin}`;
-    return callback(new Error(msg), false);
+    // TEMPORARILY ALLOW ALL ORIGINS for debugging
+    console.log(`✅ CORS DEBUG - Allowing all origins temporarily`);
+    return callback(null, true);
   },
-  credentials: true, // Allow cookies and authorization headers
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed HTTP methods
-  allowedHeaders: ['Content-Type', 'Authorization'] // Allowed headers
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
-// --- END: SECURE CORS CONFIGURATION ---
+
+// Expected origins for reference:
+console.log('📋 Expected origins:');
+console.log('  - http://localhost:5173');
+console.log('  - https://sonore-music-streaming-one.vercel.app');
+// --- END: DEBUG CORS CONFIGURATION ---
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
