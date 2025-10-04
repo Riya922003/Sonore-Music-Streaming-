@@ -5,32 +5,40 @@ require('dotenv').config();
 
 const app = express();
 
-// --- START: UPDATED CORS CONFIGURATION ---
-// List of allowed origins for your application
+// --- START: SECURE CORS CONFIGURATION ---
 const allowedOrigins = [
-  'http://localhost:5173', // Local development (Vite default)
-  'http://localhost:3000', // Local development (alternative port)
-  'https://sonore-music-streaming-one.vercel.app', // Your Vercel frontend deployment
+  'http://localhost:5173', // Local development (Vite)
+  'http://localhost:3000', // Local development (alternative)
+  'https://sonore-music-streaming-one.vercel.app', // Your Vercel frontend
 ];
 
 app.use(cors({
   origin: function(origin, callback){
-    // Allow requests with no origin (like mobile apps, Postman, server-to-server)
-    if(!origin) return callback(null, true);
+    console.log(`🔍 CORS request from origin: ${origin}`);
     
-    if(allowedOrigins.indexOf(origin) === -1){
-      const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
-      console.log(`❌ CORS blocked origin: ${origin}`);
-      console.log(`✅ Allowed origins:`, allowedOrigins);
-      return callback(new Error(msg), false);
+    // Allow requests with no origin (mobile apps, Postman, server-to-server)
+    if(!origin) {
+      console.log(`✅ CORS allowed: No origin specified`);
+      return callback(null, true);
     }
     
-    console.log(`✅ CORS allowed origin: ${origin}`);
-    return callback(null, true);
+    // Check if origin is in allowed list
+    if(allowedOrigins.includes(origin)){
+      console.log(`✅ CORS allowed: ${origin}`);
+      return callback(null, true);
+    }
+    
+    // Block unauthorized origins
+    console.log(`❌ CORS blocked: ${origin}`);
+    console.log(`✅ Allowed origins:`, allowedOrigins);
+    const msg = `CORS policy does not allow access from origin: ${origin}`;
+    return callback(new Error(msg), false);
   },
-  credentials: true // Allow cookies and auth headers if needed
+  credentials: true, // Allow cookies and authorization headers
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allowed HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'] // Allowed headers
 }));
-// --- END: UPDATED CORS CONFIGURATION ---
+// --- END: SECURE CORS CONFIGURATION ---
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
