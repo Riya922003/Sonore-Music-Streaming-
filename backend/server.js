@@ -5,33 +5,8 @@ require('dotenv').config();
 
 const app = express();
 
-// --- START: DEBUG CORS CONFIGURATION ---
-// Temporary configuration to debug and allow all origins
-app.use(cors({
-  origin: function(origin, callback){
-    console.log(`🔍 CORS DEBUG - Request from origin: "${origin}"`);
-    console.log(`🔍 CORS DEBUG - Origin type: ${typeof origin}`);
-    console.log(`🔍 CORS DEBUG - Origin length: ${origin ? origin.length : 'null'}`);
-    
-    // For debugging: Log the exact origin and allow everything temporarily
-    if(origin) {
-      console.log(`🔍 CORS DEBUG - Origin bytes: ${JSON.stringify([...origin].map(c => c.charCodeAt(0)))}`);
-    }
-    
-    // TEMPORARILY ALLOW ALL ORIGINS for debugging
-    console.log(`✅ CORS DEBUG - Allowing all origins temporarily`);
-    return callback(null, true);
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
-
-// Expected origins for reference:
-console.log('📋 Expected origins:');
-console.log('  - http://localhost:5173');
-console.log('  - https://sonore-music-streaming-one.vercel.app');
-// --- END: DEBUG CORS CONFIGURATION ---
+// --- SIMPLE CORS CONFIGURATION (ALLOW ALL) ---
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
