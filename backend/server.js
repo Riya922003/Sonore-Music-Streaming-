@@ -6,23 +6,29 @@ require('dotenv').config();
 const app = express();
 
 // --- START: UPDATED CORS CONFIGURATION ---
-// This list defines which frontend URLs are allowed to make requests to your API.
+// List of allowed origins for your application
 const allowedOrigins = [
-  'http://localhost:5173', // Your local frontend for development
-  'https://sonore-music-streaming-one.vercel.app' // IMPORTANT: REPLACE WITH YOUR VERCEL URL
+  'http://localhost:5173', // Local development (Vite default)
+  'http://localhost:3000', // Local development (alternative port)
+  'https://sonore-music-streaming-one.vercel.app', // Your Vercel frontend deployment
 ];
 
 app.use(cors({
   origin: function(origin, callback){
-    // Allow requests with no origin (like Postman or server-to-server requests)
+    // Allow requests with no origin (like mobile apps, Postman, server-to-server)
     if(!origin) return callback(null, true);
-
+    
     if(allowedOrigins.indexOf(origin) === -1){
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
+      console.log(`❌ CORS blocked origin: ${origin}`);
+      console.log(`✅ Allowed origins:`, allowedOrigins);
       return callback(new Error(msg), false);
     }
+    
+    console.log(`✅ CORS allowed origin: ${origin}`);
     return callback(null, true);
-  }
+  },
+  credentials: true // Allow cookies and auth headers if needed
 }));
 // --- END: UPDATED CORS CONFIGURATION ---
 
