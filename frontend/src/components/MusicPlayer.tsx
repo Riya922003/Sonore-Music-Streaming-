@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, Heart } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2 } from 'lucide-react';
 import { usePlayer } from '../contexts/PlayerContext';
 
 const MusicPlayer: React.FC = () => {
@@ -13,7 +13,7 @@ const MusicPlayer: React.FC = () => {
   useEffect(() => {
     if (currentSong && audioRef.current) {
       // Set the audio source to the current song's URL
-      audioRef.current.src = currentSong.audioUrl || currentSong.url || '';
+      audioRef.current.src = currentSong.audioUrl;
       
       // Play the audio
       audioRef.current.play().catch((error) => {
