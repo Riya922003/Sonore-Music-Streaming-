@@ -12,9 +12,20 @@ const songSchema = new mongoose.Schema({
   album: {
     type: String
   },
-  genre: {
-    type: String
+  featured: {
+    type: Boolean,
+    default: false
   },
+  genre: {
+    type: String,
+    required: true // Let's make genre required too for better filtering
+  },
+  // --- NEW FIELD ---
+  language: {
+    type: String,
+    required: true
+  },
+  // --- END NEW FIELD ---
   duration: {
     type: Number,
     required: true
@@ -25,7 +36,8 @@ const songSchema = new mongoose.Schema({
     unique: true
   },
   thumbnail: {
-    type: String
+    type: String,
+    required: true
   },
   uploadedBy: {
     type: mongoose.Schema.Types.ObjectId,

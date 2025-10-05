@@ -1,50 +1,77 @@
-import { 
-  Play, 
-  Pause, 
-  SkipBack, 
-  SkipForward, 
-  Volume2,
-  Maximize,
-  Settings,
-  List,
-  Heart,
-  Mic,
-  BarChart3,
-  Zap,
-  Cast
-} from 'lucide-react';
-import { useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, Heart } from 'lucide-react';
+import { usePlayer } from '../contexts/PlayerContext';
 
-interface Song {
-  title: string;
-  artist: string;
-  image: string;
-  duration: number; // in seconds
-}
+const MusicPlayer: React.FC = () => {
+  const { currentSong, isPlaying, togglePlayPause } = usePlayer();
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [currentTime, setCurrentTime] = useState<number>(0);
+  const [duration, setDuration] = useState<number>(0);
+  const [volume, setVolume] = useState<number>(50);
 
-interface MusicPlayerProps {
-  song?: Song;
-  initialTime?: number;
-  initialVolume?: number;
-  initialPlayingState?: boolean;
-}
+  // Effect to handle currentSong changes
+  useEffect(() => {
+    if (currentSong && audioRef.current) {
+      // Set the audio source to the current song's URL
+      audioRef.current.src = currentSong.audioUrl || currentSong.url || '';
+      
+      // Play the audio
+      audioRef.current.play().catch((error) => {
+        console.error('Error playing audio:', error);
+      });
+    }
+  }, [currentSong]);
 
-const MusicPlayer: React.FC<MusicPlayerProps> = ({
-  song,
-  initialTime = 203, // 3:23 in seconds to match image
-  initialVolume = 85,
-  initialPlayingState = true
-}) => {
-  const [isPlaying, setIsPlaying] = useState<boolean>(initialPlayingState);
-  const [currentTime, setCurrentTime] = useState<number>(initialTime);
-  const [volume, setVolume] = useState<number>(initialVolume);
+  // Effect to handle play/pause state changes
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.play().catch((error) => {
+          console.error('Error playing audio:', error);
+        });
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isPlaying]);
 
-  const currentSong: Song = song || {
-    title: "Do Pal",
-    artist: "Coachsahb, Asa Singh Mastana, Surinder Kaur",
-    image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=50&h=50&fit=crop",
-    duration: 329 // 5:29 in seconds to match image
+  // Handle audio time updates
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime);
+    }
   };
+
+  // Handle audio metadata loaded (to get duration)
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  // Handle seek bar change
+  const handleSeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTime = parseFloat(e.target.value);
+    setCurrentTime(newTime);
+    if (audioRef.current) {
+      audioRef.current.currentTime = newTime;
+    }
+  };
+
+  // Handle volume change
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = parseInt(e.target.value);
+    setVolume(newVolume);
+    if (audioRef.current) {
+      audioRef.current.volume = newVolume / 100;
+    }
+  };
+
+  // Format time in MM:SS format
+  // Don't render if no current song
+  if (!currentSong) {
+    return null;
+  }
 
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
@@ -52,177 +79,132 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const handlePlayPause = (): void => {
-    setIsPlaying(!isPlaying);
-  };
-
-  const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const newTime = (parseInt(e.target.value) / 100) * currentSong.duration;
-    setCurrentTime(newTime);
-  };
-
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    setVolume(parseInt(e.target.value));
-  };
-
-  const progressPercentage = (currentTime / currentSong.duration) * 100;
-
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-800 px-6 py-3 z-20">
-      <style>
-        {`
-          .music-progress-slider {
-            background: linear-gradient(to right, #ffffff 0%, #ffffff ${progressPercentage}%, #555555 ${progressPercentage}%, #555555 100%);
-          }
-          .music-progress-slider::-webkit-slider-thumb {
-            appearance: none;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: #ffffff;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-          }
-          .music-progress-slider::-moz-range-thumb {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: #ffffff;
-            cursor: pointer;
-            border: none;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-          }
-          .volume-slider {
-            background: linear-gradient(to right, #ffffff 0%, #ffffff ${volume}%, #555555 ${volume}%, #555555 100%);
-          }
-          .volume-slider::-webkit-slider-thumb {
-            appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #ffffff;
-            cursor: pointer;
-            border: none;
-          }
-          .volume-slider::-moz-range-thumb {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #ffffff;
-            cursor: pointer;
-            border: none;
-          }
-          .control-button {
-            transition: all 0.2s ease;
-          }
-          .control-button:hover {
-            transform: scale(1.05);
-            color: #ffffff;
-          }
-        `}
-      </style>
+    <>
+      {/* Hidden audio element */}
+      <audio
+        ref={audioRef}
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
+        onEnded={() => {
+          // Reset to beginning when song ends
+          setCurrentTime(0);
+        }}
+      />
       
-      <div className="flex items-center justify-between max-w-full mx-auto">
-        {/* Left Section - Song Info with heart icon positioned close to title */}
-        <div className="flex items-center gap-4 w-1/3 min-w-0 pr-8">
-          <img
-            src={currentSong.image}
-            alt={currentSong.title}
-            className="w-14 h-14 rounded object-cover flex-shrink-0"
-          />
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <h4 className="text-sm font-bold text-white truncate">{currentSong.title}</h4>
-              <button className="text-gray-400 hover:text-white control-button flex-shrink-0">
-                <Heart size={16} />
+      {/* Music Player UI */}
+      <div className="fixed bottom-0 left-0 right-0 bg-black border-t border-gray-800 px-4 py-3 z-30">
+        <div className="flex items-center justify-between max-w-full">
+          {/* Left section - Song info */}
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <img
+              src={currentSong.albumArt || 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=50&h=50&fit=crop'}
+              alt={currentSong.title}
+              className="w-14 h-14 rounded object-cover"
+            />
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <h4 className="text-sm font-bold text-white truncate">{currentSong.title}</h4>
+              </div>
+              <p className="text-xs text-gray-400 truncate mt-1">{currentSong.artist}</p>
+            </div>
+          </div>
+
+          {/* Center section - Player controls */}
+          <div className="flex flex-col items-center gap-2 flex-1 max-w-2xl mx-8">
+            {/* Control buttons */}
+            <div className="flex items-center gap-4">
+              <button className="text-gray-400 hover:text-white transition-colors">
+                <SkipBack size={20} />
+              </button>
+              
+              {/* Main play/pause button */}
+              <button 
+                onClick={togglePlayPause}
+                className="bg-white text-black p-2 rounded-full hover:scale-105 transition-all"
+              >
+                {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
+              </button>
+              
+              <button className="text-gray-400 hover:text-white transition-colors">
+                <SkipForward size={20} />
               </button>
             </div>
-            <p className="text-xs text-gray-400 truncate mt-1">{currentSong.artist}</p>
-          </div>
-        </div>
 
-        {/* Center Section - Playback Controls with better spacing */}
-        <div className="flex flex-col items-center w-1/3 max-w-2xl px-8">
-          <div className="flex items-center gap-6 mb-4">
-            <button className="text-gray-300 hover:text-white control-button">
-              <SkipBack size={22} fill="currentColor" />
-            </button>
-            <button
-              onClick={handlePlayPause}
-              className="bg-white text-black p-3 rounded-full hover:scale-110 transition-all duration-200 shadow-lg"
-            >
-              {isPlaying ? <Pause size={26} fill="currentColor" /> : <Play size={26} fill="currentColor" />}
-            </button>
-            <button className="text-gray-300 hover:text-white control-button">
-              <SkipForward size={22} fill="currentColor" />
-            </button>
-          </div>
-          
-          {/* Progress Bar with time indicators */}
-          <div className="flex items-center gap-3 w-full max-w-lg">
-            <span className="text-xs text-gray-300 w-12 text-right font-medium">
-              {formatTime(currentTime)}
-            </span>
-            <div className="flex-1 relative">
+            {/* Progress bar */}
+            <div className="flex items-center gap-2 w-full">
+              <span className="text-xs text-gray-400 min-w-fit">
+                {formatTime(currentTime)}
+              </span>
               <input
                 type="range"
                 min="0"
-                max="100"
-                value={progressPercentage}
-                onChange={handleProgressChange}
-                className="w-full h-1 rounded-lg appearance-none cursor-pointer music-progress-slider"
+                max={duration || 100}
+                value={currentTime}
+                onChange={handleSeekChange}
+                className="flex-1 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+                style={{
+                  background: `linear-gradient(to right, #1db954 0%, #1db954 ${(currentTime / (duration || 100)) * 100}%, #4b5563 ${(currentTime / (duration || 100)) * 100}%, #4b5563 100%)`
+                }}
               />
+              <span className="text-xs text-gray-400 min-w-fit">
+                {formatTime(duration)}
+              </span>
             </div>
-            <span className="text-xs text-gray-300 w-12 font-medium">
-              {formatTime(currentSong.duration)}
-            </span>
           </div>
-        </div>
 
-        {/* Right Section - Extended Controls like in the image */}
-        <div className="flex items-center gap-4 w-1/3 justify-end pl-8">
-          <button className="text-gray-400 hover:text-white control-button">
-            <List size={18} />
-          </button>
-          <button className="text-gray-400 hover:text-white control-button">
-            <Zap size={18} />
-          </button>
-          <button className="text-gray-400 hover:text-white control-button">
-            <Cast size={18} />
-          </button>
-          <button className="text-gray-400 hover:text-white control-button">
-            <Mic size={18} />
-          </button>
-          <button className="text-gray-400 hover:text-white control-button">
-            <BarChart3 size={18} />
-          </button>
-          
-          <div className="flex items-center gap-2">
-            <button className="text-gray-400 hover:text-white control-button">
-              <Volume2 size={18} />
-            </button>
-            <div className="w-24 relative">
+          {/* Right section - Volume controls */}
+          <div className="flex items-center gap-3 flex-1 justify-end">
+            <div className="flex items-center gap-2">
+              <Volume2 size={20} className="text-gray-400" />
               <input
                 type="range"
                 min="0"
                 max="100"
                 value={volume}
                 onChange={handleVolumeChange}
-                className="w-full h-1 rounded-lg appearance-none cursor-pointer volume-slider"
+                className="w-20 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
+                style={{
+                  background: `linear-gradient(to right, #1db954 0%, #1db954 ${volume}%, #4b5563 ${volume}%, #4b5563 100%)`
+                }}
               />
             </div>
           </div>
-          
-          <button className="text-gray-400 hover:text-white control-button">
-            <Settings size={18} />
-          </button>
-          <button className="text-gray-400 hover:text-white control-button">
-            <Maximize size={18} />
-          </button>
         </div>
       </div>
-    </div>
+
+      {/* Custom slider styles */}
+      <style>{`
+        .slider::-webkit-slider-thumb {
+          appearance: none;
+          height: 12px;
+          width: 12px;
+          border-radius: 50%;
+          background: #1db954;
+          cursor: pointer;
+          border: none;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .slider::-moz-range-thumb {
+          height: 12px;
+          width: 12px;
+          border-radius: 50%;
+          background: #1db954;
+          cursor: pointer;
+          border: none;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .slider:hover::-webkit-slider-thumb {
+          transform: scale(1.2);
+        }
+        
+        .slider:hover::-moz-range-thumb {
+          transform: scale(1.2);
+        }
+      `}</style>
+    </>
   );
 };
 

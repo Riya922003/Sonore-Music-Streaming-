@@ -13,9 +13,8 @@ module.exports = (req, res, next) => {
     // 3. Verify token using JWT_SECRET
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
-    // 4. Attach the nested 'user' object to the request object
-    //    CORRECTED LINE:
-    req.user = decoded.user; 
+    // 4. Attach the user object to the request object
+    req.user = decoded; 
     
     // 5. Call next() to proceed
     next();

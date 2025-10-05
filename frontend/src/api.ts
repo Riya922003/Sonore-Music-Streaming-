@@ -4,7 +4,7 @@ import axios from 'axios';
 const apiClient = axios.create({
   // This is the only line you'll ever need to change to switch
   // between your local and live backend.
-  baseURL: 'https://backend-deployment-u389.onrender.com/', // <-- YOUR LIVE RENDER URL
+  baseURL: 'http://localhost:5000', // <-- LOCAL DEVELOPMENT URL
 });
 
 // This "interceptor" automatically adds the auth token to every request

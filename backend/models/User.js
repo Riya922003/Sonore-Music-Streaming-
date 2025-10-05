@@ -13,7 +13,14 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: true
+    required: function() {
+      // Password is required only if googleId is not present
+      return !this.googleId;
+    }
+  },
+  googleId: {
+    type: String,
+    default: null
   },
   likedSongs: {
     type: [String],
@@ -29,8 +36,8 @@ const userSchema = new mongoose.Schema({
 
 // Pre-save hook to hash password
 userSchema.pre('save', async function(next) {
-  // Only hash the password if it has been modified (or is new)
-  if (!this.isModified('password')) {
+  // Only hash the password if it has been modified (or is new) and is not empty
+  if (!this.isModified('password') || !this.password) {
     return next();
   }
 

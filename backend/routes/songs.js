@@ -39,6 +39,28 @@ router.get('/test-config', (req, res) => {
   }
 });
 
+// GET featured songs
+router.get('/featured', async (req, res) => {
+  try {
+    const featuredSongs = await Song.find({ featured: true })
+      .limit(10)
+      .populate('uploadedBy', 'name')
+      .sort({ createdAt: -1 });
+      
+    res.status(200).json({
+      success: true,
+      count: featuredSongs.length,
+      songs: featuredSongs
+    });
+  } catch (error) {
+    console.error('Get featured songs error:', error);
+    res.status(500).json({
+      success: false,
+      message: "Server error occurred while fetching featured songs."
+    });
+  }
+});
+
 // POST a new song with a thumbnail
 router.post(
   '/upload',

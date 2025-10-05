@@ -3,9 +3,12 @@ import Sidebar from './components/Sidebar.tsx';
 import TopNav from './components/TopNav.tsx';
 import MainContent from './components/MainContent.tsx';
 import MusicPlayer from './components/MusicPlayer.tsx';
+import AuthModal from './components/AuthModal.tsx';
+import { useAuth } from './contexts/AuthContext';
 
 function App() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const { isAuthModalOpen } = useAuth();
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -31,6 +34,9 @@ function App() {
         {/* Music Player - Fixed at bottom */}
         <MusicPlayer />
       </div>
+      
+      {/* Auth Modal */}
+      {isAuthModalOpen && <AuthModal isOpen={isAuthModalOpen} />}
     </div>
   );
 }

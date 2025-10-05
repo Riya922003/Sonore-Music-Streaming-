@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Play, ChevronRight } from 'lucide-react';
 import MusicCard from './MusicCard';
 import apiClient from '../api';
+import { usePlayer } from '../contexts/PlayerContext';
 
 interface MadeForYouItem {
   id: number;
@@ -15,11 +16,20 @@ interface Song {
   _id: string;
   title: string;
   artist: string;
+  audioUrl: string;
   url: string;
   thumbnail: string;
+  albumArt?: string;
   album?: string;
   duration?: number;
   genre?: string;
+  uploadedBy?: {
+    _id: string;
+    name: string;
+    email: string;
+  };
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface MainContentProps {
@@ -36,6 +46,18 @@ const MainContent: React.FC<MainContentProps> = ({
   const [isHeroHovered, setIsHeroHovered] = useState(false);
   const [songs, setSongs] = useState<Song[]>([]);
   const [isLoadingSongs, setIsLoadingSongs] = useState(false);
+  const { playSong } = usePlayer();
+
+  // Handle song click - transform the song data to match PlayerContext expectations
+  const handleSongClick = (song: Song) => {
+    // Transform the song data to match the PlayerContext Song interface
+    const playerSong = {
+      ...song,
+      audioUrl: song.url || song.audioUrl, // Use url as audioUrl if audioUrl doesn't exist
+      albumArt: song.thumbnail || song.albumArt, // Use thumbnail as albumArt if albumArt doesn't exist
+    };
+    playSong(playerSong);
+  };
 
   useEffect(() => {
     const fetchAllSongs = async () => {
@@ -276,6 +298,7 @@ const MainContent: React.FC<MainContentProps> = ({
               <div 
                 key={song._id} 
                 className="bg-gray-800 p-4 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer group"
+                onClick={() => handleSongClick(song)}
               >
                 <div className="relative mb-4">
                   <img 
