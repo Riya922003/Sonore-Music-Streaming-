@@ -44,10 +44,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   ];
 
   return (
-    <div className="w-full bg-black border-r border-gray-800 h-screen overflow-hidden transition-all duration-300 ease-in-out flex flex-col">
+    <div className={`${isCollapsed ? 'w-20' : 'w-64'} bg-gray-900 border-r border-gray-800 h-[calc(100vh-2rem)] rounded-lg overflow-hidden transition-all duration-300 ease-in-out flex flex-col flex-shrink-0 fixed top-4 left-4 z-30`}>
       
       {/* Logo and Toggle Button */}
-      <div className="p-4 border-b border-gray-800 flex items-center justify-between min-h-[80px]">
+      <div className={`p-4 border-b border-gray-800 flex items-center min-h-[80px] ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
         {!isCollapsed && (
           <div className="flex-1">
             <h1 className="text-xl font-bold text-green-500">Sonore</h1>
@@ -71,13 +71,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
             {navigationItems.map((item) => (
               <li key={item.label}>
                 <div 
-                  className={`sidebar-item group ${item.active ? 'active' : ''} ${isCollapsed ? 'collapsed' : ''}`}
+                  className={`sidebar-item group ${item.active ? 'active' : ''} ${isCollapsed ? 'collapsed justify-center' : ''}`}
                   title={isCollapsed ? item.label : ''}
                 >
                   <item.icon size={20} className="flex-shrink-0" />
-                  {!isCollapsed && (
-                    <span className="truncate">{item.label}</span>
-                  )}
+                  <span className={`truncate ${isCollapsed ? 'hidden' : ''}`}>{item.label}</span>
                 </div>
               </li>
             ))}
@@ -95,13 +93,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
             {libraryItems.map((item) => (
               <li key={item.label}>
                 <div 
-                  className={`sidebar-item group ${isCollapsed ? 'collapsed' : ''}`}
+                  className={`sidebar-item group ${isCollapsed ? 'collapsed justify-center' : ''}`}
                   title={isCollapsed ? item.label : ''}
                 >
                   <item.icon size={20} className="flex-shrink-0" />
-                  {!isCollapsed && (
-                    <span className="truncate">{item.label}</span>
-                  )}
+                  <span className={`truncate ${isCollapsed ? 'hidden' : ''}`}>{item.label}</span>
                 </div>
               </li>
             ))}
@@ -120,13 +116,11 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
           {userItems.map((item) => (
             <li key={item.label}>
               <div 
-                className={`sidebar-item group ${isCollapsed ? 'collapsed' : ''}`}
+                className={`sidebar-item group ${isCollapsed ? 'collapsed justify-center' : ''}`}
                 title={isCollapsed ? item.label : ''}
               >
                 <item.icon size={20} className="flex-shrink-0" />
-                {!isCollapsed && (
-                  <span className="truncate">{item.label}</span>
-                )}
+                <span className={`truncate ${isCollapsed ? 'hidden' : ''}`}>{item.label}</span>
               </div>
             </li>
           ))}

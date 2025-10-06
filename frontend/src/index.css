@@ -233,6 +233,16 @@
     background-color: rgba(107, 114, 128, 1);
   }
 
+  /* Hide scrollbar completely */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Ensure horizontal scroll containers behave properly */
   .music-section-container {
     max-width: 100%;

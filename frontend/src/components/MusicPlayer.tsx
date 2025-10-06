@@ -1,8 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Repeat } from 'lucide-react';
 import { usePlayer } from '../contexts/PlayerContext';
-
-
+import ElasticSlider from './ElasticSlider';
 
 const MusicPlayer: React.FC = () => {
   const { currentSong, isPlaying, togglePlayPause, playNext, playPrevious } = usePlayer();
@@ -159,9 +158,9 @@ const MusicPlayer: React.FC = () => {
     // In demo mode, just update the currentTime state
   };
 
-  // Handle volume change
-  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = parseFloat(e.target.value);
+  // Handle volume change from ElasticSlider
+  const handleVolumeChange = (sliderValue: number) => {
+    const newVolume = sliderValue / 100; // Convert from 0-100 to 0-1
     setVolume(newVolume);
     if (audioRef.current) {
       audioRef.current.volume = newVolume;
@@ -295,20 +294,14 @@ const MusicPlayer: React.FC = () => {
           </div>
 
           {/* Right section - Volume controls */}
-          <div className="flex items-center gap-3 flex-1 justify-end">
-            <div className="flex items-center gap-2">
-              <Volume2 size={20} className="text-gray-400" />
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={volume}
-                onChange={handleVolumeChange}
-                className="w-20 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
-                style={{
-                  background: `linear-gradient(to right, #1db954 0%, #1db954 ${volume * 100}%, #4b5563 ${volume * 100}%, #4b5563 100%)`
-                }}
+          <div className="flex items-center w-1/3 justify-center">
+            <div className="w-56 flex items-center mr-8">
+              <ElasticSlider
+                maxValue={100}
+                defaultValue={volume * 100} // Convert the 0-1 volume state to a 0-100 scale
+                onChange={handleVolumeChange} // Pass the handler function
+                leftIcon={<VolumeX size={18} className="text-gray-400" />}
+                rightIcon={<Volume2 size={18} className="text-gray-400" />}
               />
             </div>
           </div>

@@ -5,7 +5,7 @@ const FormData = require('form-data');
 
 // --- CONFIGURATION ---
 const API_URL = 'http://localhost:5000/api/songs/upload'; 
-const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZTNhM2JkZmI3Y2ZiZTZkMWMzNTM5NiIsIm5hbWUiOiJUZXN0IFVzZXIiLCJlbWFpbCI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwiaWF0IjoxNzU5NzQ5MDU0LCJleHAiOjE3NTk3NjcwNTR9.8rpLsI3nXnaXdOHXPP5KW9nuIZsEokbnUqO4vulPFCg'; 
+const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZTI3ZTAyNDJiYzY1ZjMyZjgxZWZjMSIsIm5hbWUiOiJSaXlhMSIsImVtYWlsIjoicml5YTFAZ21haWwuY29tIiwiaWF0IjoxNzU5NzczMDA5LCJleHAiOjE3NTk3OTEwMDl9.XX4SgaaJYn3Hu6px2TXZ8H0BaEDAMuLeME7w8W2jSbQ'; 
 const SONGS_BASE_DIRECTORY = path.join(__dirname, '..', 'songs-to-upload');
 const TEMP_THUMBNAIL_PATH = path.join(__dirname, 'temp_thumbnail.jpg');
 // --- END CONFIGURATION ---
@@ -49,7 +49,7 @@ const songMetadata = {
     artist: 'Echo Valley',
     duration: 183,
     genre: 'Pop',
-    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1520637836862-4d197d17c91a?w=800&h=600&fit=crop'
   },
   'celtic-irish-scottish-tin-whistle-background-music-10455': {
     artist: 'Celtic Winds',
@@ -109,7 +109,7 @@ const songMetadata = {
     artist: 'Adventure Tales',
     duration: 60,
     genre: 'Soundtrack',
-    thumbnail: 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=600&fit=crop'
   },
   'the-black-oath-of-white-fire-399835': {
     artist: 'Dark Symphony',
@@ -145,13 +145,13 @@ const songMetadata = {
     artist: 'Flute Ensemble',
     duration: 145,
     genre: 'Christmas',
-    thumbnail: 'https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=600&fit=crop'
   },
   'what-is-not-for-me-410786': {
     artist: 'Reflection',
     duration: 207,
     genre: 'Indie Pop',
-    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1484755560615-676bb5f0e3b6?w=800&h=600&fit=crop'
   },
   'where-tomorrow-refuses-to-arrive-400834': {
     artist: 'Time Drift',
@@ -163,7 +163,7 @@ const songMetadata = {
     artist: 'Broken Horizon',
     duration: 234,
     genre: 'Atmospheric',
-    thumbnail: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=800&h=600&fit=crop'
   },
 
   // Hindi songs
@@ -171,7 +171,7 @@ const songMetadata = {
     artist: 'Vishal Dadlani',
     duration: 195,
     genre: 'Bollywood',
-    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&h=600&fit=crop'
   },
   'Lat Lag Gayee': {
     artist: 'Benny Dayal',
@@ -189,7 +189,7 @@ const songMetadata = {
     artist: 'RDB',
     duration: 223,
     genre: 'Bollywood Dance',
-    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800&h=600&fit=crop'
   },
   'mein_agar_kahoon_keys': {
     artist: 'Udit Narayan',
@@ -201,25 +201,25 @@ const songMetadata = {
     artist: 'Jyotica Tangri',
     duration: 189,
     genre: 'Bollywood Item',
-    thumbnail: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
   },
   'Oh Ho Ho Ho (Remix)': {
     artist: 'Sunidhi Chauhan',
     duration: 198,
     genre: 'Bollywood Remix',
-    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
   },
   'She Move It Like (1)': {
     artist: 'Badshah',
     duration: 167,
     genre: 'Hip Hop Hindi',
-    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1520637836862-4d197d17c91a?w=800&h=600&fit=crop'
   },
   'She Move It Like': {
     artist: 'Badshah',
     duration: 167,
     genre: 'Hip Hop Hindi',
-    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
   },
 
   // Punjabi songs
@@ -239,7 +239,7 @@ const songMetadata = {
     artist: 'Sidhu Moose Wala',
     duration: 203,
     genre: 'Punjabi Hip Hop',
-    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1520637836862-4d197d17c91a?w=800&h=600&fit=crop'
   },
   'I Really Do....': {
     artist: 'Karan Aujla',
@@ -251,31 +251,31 @@ const songMetadata = {
     artist: 'AP Dhillon',
     duration: 145,
     genre: 'Punjabi Trap',
-    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&h=600&fit=crop'
   },
   'Supreme': {
     artist: 'Shubh',
     duration: 172,
     genre: 'Punjabi Pop',
-    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800&h=600&fit=crop'
   },
   'Wavy (1)': {
     artist: 'Gurinder Gill',
     duration: 189,
     genre: 'Punjabi Urban',
-    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1484755560615-676bb5f0e3b6?w=800&h=600&fit=crop'
   },
   'Wavy': {
     artist: 'Gurinder Gill',
     duration: 189,
     genre: 'Punjabi Urban',
-    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=800&h=600&fit=crop'
   },
   'Winning Speech': {
     artist: 'Karan Aujla',
     duration: 234,
     genre: 'Punjabi Rap',
-    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=600&fit=crop'
   }
 };
 
