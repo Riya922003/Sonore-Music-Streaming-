@@ -1,39 +1,145 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2 } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat } from 'lucide-react';
 import { usePlayer } from '../contexts/PlayerContext';
 
+
+
 const MusicPlayer: React.FC = () => {
-  const { currentSong, isPlaying, togglePlayPause } = usePlayer();
+  const { currentSong, isPlaying, togglePlayPause, playNext, playPrevious } = usePlayer();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
-  const [volume, setVolume] = useState<number>(50);
+  const [volume, setVolume] = useState<number>(1);
+  const [repeat, setRepeat] = useState<boolean>(false);
+  const [usingFallback, setUsingFallback] = useState<boolean>(false);
+  const demoTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Helper function to format seconds into "minutes:seconds" string
+  const formatTime = (seconds: number): string => {
+    if (isNaN(seconds) || seconds < 0) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   // Effect to handle currentSong changes
   useEffect(() => {
     if (currentSong && audioRef.current) {
-      // Set the audio source to the current song's URL
-      audioRef.current.src = currentSong.audioUrl;
+      const audio = audioRef.current;
+      console.log('Loading song:', currentSong.title, 'URL:', currentSong.audioUrl);
+      console.log('Full currentSong object:', currentSong);
       
-      // Play the audio
-      audioRef.current.play().catch((error) => {
-        console.error('Error playing audio:', error);
-      });
+      // Try the original URL first
+      audio.src = currentSong.audioUrl;
+      console.log('Audio element src set to:', audio.src);
+      audio.load();
+      console.log('Audio load() called, readyState:', audio.readyState, 'networkState:', audio.networkState);
+      
+      // Reset time states
+      setCurrentTime(0);
+      setDuration(0);
+      
+      // Reset fallback state for new song
+      setUsingFallback(false);
+      
+      // Set up error handler for this specific song load
+      const handleLoadError = () => {
+        console.log('Audio URL failed. Demo mode disabled.');
+        // setUsingFallback(true); // DISABLED: Uncomment to enable demo mode
+        
+        // In demo mode, simulate the audio duration and playback
+        // setDuration(currentSong.duration || 180); // DISABLED
+        
+        // Remove the error event listener to prevent infinite loops
+        audio.removeEventListener('error', handleLoadError);
+      };
+      
+      audio.addEventListener('error', handleLoadError, { once: true });
+      
+      return () => {
+        audio.removeEventListener('error', handleLoadError);
+      };
     }
   }, [currentSong]);
 
   // Effect to handle play/pause state changes
   useEffect(() => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.play().catch((error) => {
-          console.error('Error playing audio:', error);
-        });
-      } else {
-        audioRef.current.pause();
+    if (currentSong) {
+      console.log('Play state changed:', isPlaying);
+      
+      if (usingFallback) {
+        // Demo mode - simulate playback with timer
+        if (isPlaying) {
+          demoTimerRef.current = setInterval(() => {
+            setCurrentTime(prev => {
+              const newTime = prev + 1;
+              if (newTime >= duration) {
+                if (repeat) {
+                  return 0;
+                } else {
+                  playNext();
+                  return 0;
+                }
+              }
+              return newTime;
+            });
+          }, 1000);
+        } else {
+          if (demoTimerRef.current) {
+            clearInterval(demoTimerRef.current);
+            demoTimerRef.current = null;
+          }
+        }
+      } else if (audioRef.current) {
+        // Normal audio mode
+        if (isPlaying) {
+          console.log('Attempting to play audio, readyState:', audioRef.current.readyState);
+          audioRef.current.play().then(() => {
+            console.log('Audio play() succeeded');
+          }).catch((error) => {
+            console.error('Error playing audio:', error);
+            console.error('Audio ready state:', audioRef.current?.readyState);
+            console.error('Audio network state:', audioRef.current?.networkState);
+            console.error('Audio src:', audioRef.current?.src);
+            // If play fails, don't toggle immediately - let the error handler deal with it
+          });
+        } else {
+          audioRef.current.pause();
+          console.log('Audio paused');
+        }
       }
     }
-  }, [isPlaying]);
+    
+    // Cleanup timer on unmount or when dependencies change
+    return () => {
+      if (demoTimerRef.current) {
+        clearInterval(demoTimerRef.current);
+        demoTimerRef.current = null;
+      }
+    };
+  }, [isPlaying, currentSong, usingFallback, duration, repeat, playNext]);
+
+  // Effect to handle repeat state changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.loop = repeat;
+    }
+  }, [repeat]);
+
+  // Effect to initialize audio volume
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+
+  // Handle audio metadata loaded (to get duration)
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      console.log('Audio metadata loaded, duration:', audioRef.current.duration);
+      setDuration(audioRef.current.duration);
+    }
+  };
 
   // Handle audio time updates
   const handleTimeUpdate = () => {
@@ -42,53 +148,62 @@ const MusicPlayer: React.FC = () => {
     }
   };
 
-  // Handle audio metadata loaded (to get duration)
-  const handleLoadedMetadata = () => {
-    if (audioRef.current) {
-      setDuration(audioRef.current.duration);
-    }
-  };
-
   // Handle seek bar change
   const handleSeekChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = parseFloat(e.target.value);
     setCurrentTime(newTime);
-    if (audioRef.current) {
+    
+    if (!usingFallback && audioRef.current) {
       audioRef.current.currentTime = newTime;
     }
+    // In demo mode, just update the currentTime state
   };
 
   // Handle volume change
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVolume = parseInt(e.target.value);
+    const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
     if (audioRef.current) {
-      audioRef.current.volume = newVolume / 100;
+      audioRef.current.volume = newVolume;
     }
   };
 
-  // Format time in MM:SS format
   // Don't render if no current song
   if (!currentSong) {
     return null;
   }
-
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
 
   return (
     <>
       {/* Hidden audio element */}
       <audio
         ref={audioRef}
-        onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
+        onTimeUpdate={handleTimeUpdate}
+        onError={(e) => {
+          console.error('Audio error:', e.currentTarget.error);
+          console.log('Audio failed to load. Demo mode is disabled.');
+          // Demo mode disabled - no fallback behavior
+        }}
+        onLoadStart={() => {
+          console.log('Audio load started');
+        }}
+        onCanPlay={() => {
+          console.log('Audio can play, duration:', audioRef.current?.duration);
+        }}
+        onCanPlayThrough={() => {
+          console.log('Audio can play through completely');
+        }}
+        onLoadedData={() => {
+          console.log('Audio data loaded');
+        }}
         onEnded={() => {
           // Reset to beginning when song ends
           setCurrentTime(0);
+          // Only play next if repeat is not enabled
+          if (!repeat) {
+            playNext();
+          }
         }}
       />
       
@@ -105,8 +220,16 @@ const MusicPlayer: React.FC = () => {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <h4 className="text-sm font-bold text-white truncate">{currentSong.title}</h4>
+                {usingFallback && (
+                  <span className="text-xs bg-yellow-600 text-yellow-100 px-1 rounded">DEMO</span>
+                )}
               </div>
-              <p className="text-xs text-gray-400 truncate mt-1">{currentSong.artist}</p>
+              <p className="text-xs text-gray-400 truncate mt-1">
+                {currentSong.artist}
+                {usingFallback && (
+                  <span className="ml-2 text-yellow-400">• Demo Mode</span>
+                )}
+              </p>
             </div>
           </div>
 
@@ -114,7 +237,10 @@ const MusicPlayer: React.FC = () => {
           <div className="flex flex-col items-center gap-2 flex-1 max-w-2xl mx-8">
             {/* Control buttons */}
             <div className="flex items-center gap-4">
-              <button className="text-gray-400 hover:text-white transition-colors">
+              <button 
+                onClick={playPrevious}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 <SkipBack size={20} />
               </button>
               
@@ -126,8 +252,23 @@ const MusicPlayer: React.FC = () => {
                 {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" />}
               </button>
               
-              <button className="text-gray-400 hover:text-white transition-colors">
+              <button 
+                onClick={playNext}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
                 <SkipForward size={20} />
+              </button>
+              
+              <button 
+                onClick={() => setRepeat(!repeat)}
+                className={`p-1 rounded transition-colors ${
+                  repeat 
+                    ? 'text-green-500 bg-green-500/20' 
+                    : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                }`}
+                title={repeat ? 'Repeat: On' : 'Repeat: Off'}
+              >
+                <Repeat size={20} />
               </button>
             </div>
 
@@ -139,12 +280,12 @@ const MusicPlayer: React.FC = () => {
               <input
                 type="range"
                 min="0"
-                max={duration || 100}
+                max={duration}
                 value={currentTime}
                 onChange={handleSeekChange}
                 className="flex-1 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
                 style={{
-                  background: `linear-gradient(to right, #1db954 0%, #1db954 ${(currentTime / (duration || 100)) * 100}%, #4b5563 ${(currentTime / (duration || 100)) * 100}%, #4b5563 100%)`
+                  background: `linear-gradient(to right, #1db954 0%, #1db954 ${duration ? (currentTime / duration) * 100 : 0}%, #4b5563 ${duration ? (currentTime / duration) * 100 : 0}%, #4b5563 100%)`
                 }}
               />
               <span className="text-xs text-gray-400 min-w-fit">
@@ -160,12 +301,13 @@ const MusicPlayer: React.FC = () => {
               <input
                 type="range"
                 min="0"
-                max="100"
+                max="1"
+                step="0.01"
                 value={volume}
                 onChange={handleVolumeChange}
                 className="w-20 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer slider"
                 style={{
-                  background: `linear-gradient(to right, #1db954 0%, #1db954 ${volume}%, #4b5563 ${volume}%, #4b5563 100%)`
+                  background: `linear-gradient(to right, #1db954 0%, #1db954 ${volume * 100}%, #4b5563 ${volume * 100}%, #4b5563 100%)`
                 }}
               />
             </div>

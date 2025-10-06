@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: __dirname + '/.env' });
 
 const app = express();
 
@@ -10,6 +11,9 @@ app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static audio files
+app.use('/audio', express.static(path.join(__dirname, 'songs-to-upload')));
 
 // Import routes
 const authRouter = require('./routes/auth');

@@ -44,9 +44,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   ];
 
   return (
-    <div className={`${
-      isCollapsed ? 'w-16' : 'w-64'
-    } bg-black border-r border-gray-800 h-screen fixed left-0 top-0 z-30 overflow-hidden transition-all duration-300 ease-in-out flex flex-col`}>
+    <div className="w-full bg-black border-r border-gray-800 h-screen overflow-hidden transition-all duration-300 ease-in-out flex flex-col">
       
       {/* Logo and Toggle Button */}
       <div className="p-4 border-b border-gray-800 flex items-center justify-between min-h-[80px]">

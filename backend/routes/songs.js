@@ -1,16 +1,40 @@
 const express = require('express');
 const Song = require('../models/Song');
+const User = require('../models/User');
 const authMiddleware = require('../middleware/authMiddleware');
 const upload = require('../middleware/multer.js'); // Import the instance directly
 const cloudinary = require('../config/cloudinaryConfig');
 
 const router = express.Router();
 
-// GET all songs
+// GET all songs with optional filtering by language and genre
 router.get('/', async (req, res) => {
   try {
-    const songs = await Song.find().populate('uploadedBy', 'name email').sort({ createdAt: -1 });
-    res.status(200).json({ success: true, count: songs.length, songs: songs });
+    // Extract query parameters
+    const { language, genre } = req.query;
+    
+    // Build filter object
+    const filter = {};
+    
+    // Add language filter if provided
+    if (language) {
+      filter.language = language;
+    }
+    
+    // Add genre filter if provided
+    if (genre) {
+      filter.genre = genre;
+    }
+    
+    // Fetch songs with the filter (empty filter returns all songs)
+    const songs = await Song.find(filter).populate('uploadedBy', 'name email').sort({ createdAt: -1 });
+    
+    res.status(200).json({ 
+      success: true, 
+      count: songs.length, 
+      songs: songs,
+      filters: { language, genre } // Optional: include applied filters in response
+    });
   } catch (error) {
     console.error('Get songs error:', error);
     res.status(500).json({ success: false, message: "Server error occurred while fetching songs." });
@@ -100,7 +124,11 @@ router.post(
       const newSong = new Song({
         title: req.body.title,
         artist: req.body.artist,
+        album: req.body.album || 'Unknown Album',
         duration: parseInt(req.body.duration),
+        genre: req.body.genre || 'Unknown',
+        language: req.body.language || 'Unknown',
+        featured: req.body.featured === 'true' || req.body.featured === true,
         url: songResult.secure_url,
         thumbnail: thumbnailResult.secure_url,
         uploadedBy: req.user.id,

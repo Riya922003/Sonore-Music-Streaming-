@@ -1,133 +1,444 @@
-require('dotenv').config();
-const mongoose = require('mongoose');
-const Song = require('../models/Song');
-const User = require('../models/User');
+const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
+const FormData = require('form-data');
 
-const thumbnailUrls = [
-  'https://tse3.mm.bing.net/th/id/OIP.5FeXzul6H7eJd7xvqCxi1QHaEK?pid=Api&P=0&h=180',
-  'https://tse4.mm.bing.net/th/id/OIP.29YF9Nf0pmagXJTEgpYJcAHaE8?pid=Api&P=0&h=180',
-  'https://img.freepik.com/premium-photo/piece-vinyl-record-texture-isolated-white-background_936711-8523.jpg?w=2000',
-  'https://tse4.mm.bing.net/th/id/OIP.RWtrD4jAW5_1KOx_mLXLIQHaFj?pid=Api&P=0&h=180',
-  'https://tse1.mm.bing.net/th/id/OIP.Iwfnge35PnaYEkZOtdjwdQHaFj?pid=Api&P=0&h=180',
-  'https://tse1.mm.bing.net/th/id/OIP._-m6WW5PkgPrB49LKLyh4wHaFc?pid=Api&P=0&h=180'
-];
+// --- CONFIGURATION ---
+const API_URL = 'https://backend-deployment-u389.onrender.com/api/songs/upload'; 
+const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZTI3ZTAyNDJiYzY1ZjMyZjgxZWZjMSIsIm5hbWUiOiJSaXlhMSIsImVtYWlsIjoicml5YTFAZ21haWwuY29tIiwiaWF0IjoxNzU5NzQ3MzEzLCJleHAiOjE3NTk3NjUzMTN9.ZlGCcYjqLalSCosgcQVLf5OeWCBPCZjWYubIU1UvVDw'; 
+const SONGS_BASE_DIRECTORY = path.join(__dirname, '..', 'songs-to-upload');
+const TEMP_THUMBNAIL_PATH = path.join(__dirname, 'temp_thumbnail.jpg');
+// --- END CONFIGURATION ---
 
-const songData = [
-  // English
-  { title: 'Stomp', artist: 'AlexiAction', duration: 128, genre: 'Electronic', language: 'English', url: 'https://cdn.pixabay.com/download/audio/2023/09/23/audio_73641d4677.mp3' },
-  { title: 'The Beat of Nature', artist: 'Olexy', duration: 130, genre: 'Ambient', language: 'English', url: 'https://cdn.pixabay.com/download/audio/2024/02/09/audio_3d207374b6.mp3' },
-  { title: 'Lofi Chill', artist: 'FASSounds', duration: 140, genre: 'Lofi', language: 'English', url: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_18210303a1.mp3' },
-  { title: 'Ambient Classical Guitar', artist: 'William_King', duration: 180, genre: 'Ambient', language: 'English', url: 'https://cdn.pixabay.com/download/audio/2022/11/21/audio_a27084c988.mp3' },
-  { title: 'Weeknds', artist: 'DayFox', duration: 195, genre: 'Pop', language: 'English', url: 'https://cdn.pixabay.com/download/audio/2022/10/18/audio_b2f1595679.mp3' },
-  { title: 'Morning Garden', artist: 'Olexy', duration: 160, genre: 'Acoustic', language: 'English', url: 'https://cdn.pixabay.com/download/audio/2022/08/30/audio_336154a85b.mp3' },
-  { title: 'Password Infinity', artist: 'Nico_Staf', duration: 155, genre: 'Electronic', language: 'English', url: 'https://cdn.pixabay.com/download/audio/2023/12/26/audio_255a6a36c3.mp3' },
-  { title: 'Trap', artist: 'AlexiAction', duration: 110, genre: 'Hip Hop', language: 'English', url: 'https://cdn.pixabay.com/download/audio/2023/04/10/audio_243a08d989.mp3' },
-  { title: 'Let It Go', artist: 'ItsWatR', duration: 132, genre: 'Pop', language: 'English', url: 'https://cdn.pixabay.com/download/audio/2022/11/11/audio_4234032483.mp3' },
-  { title: 'Good Vibe', artist: 'AlexiAction', duration: 145, genre: 'Pop', language: 'English', url: 'https://cdn.pixabay.com/download/audio/2023/08/02/audio_eb7f511756.mp3' },
-  
-  // Hindi
-  { title: 'Mumbai Midnight', artist: 'Zen_Man', duration: 170, genre: 'Bollywood', language: 'Hindi', url: 'https://cdn.pixabay.com/download/audio/2023/02/13/audio_855909ac8f.mp3' },
-  { title: 'Indian Spirit', artist: 'Wolves', duration: 150, genre: 'World', language: 'Hindi', url: 'https://cdn.pixabay.com/download/audio/2023/04/01/audio_1919830541.mp3' },
-  { title: 'Delhi Dreams', artist: 'SoundGallery', duration: 185, genre: 'Bollywood', language: 'Hindi', url: 'https://cdn.pixabay.com/download/audio/2022/08/04/audio_93f00a58a9.mp3' },
-  { title: 'Jaipur Sunrise', artist: 'chillmore', duration: 162, genre: 'World', language: 'Hindi', url: 'https://cdn.pixabay.com/download/audio/2022/08/25/audio_41a8762740.mp3' },
-  { title: 'Ganges Flow', artist: 'Ashot-Danielyan', duration: 200, genre: 'Ambient', language: 'Hindi', url: 'https://cdn.pixabay.com/download/audio/2022/10/18/audio_50231333b2.mp3' },
-  { title: 'Bollywood Party', artist: 'Musictown', duration: 135, genre: 'Bollywood', language: 'Hindi', url: 'https://cdn.pixabay.com/download/audio/2023/02/13/audio_b289c89498.mp3' },
-  { title: 'Himalayan Flute', artist: 'NaturesEye', duration: 220, genre: 'Meditation', language: 'Hindi', url: 'https://cdn.pixabay.com/download/audio/2023/04/24/audio_03d9735d13.mp3' },
-  { title: 'Rajasthan Rhythms', artist: 'SergeQuadrado', duration: 148, genre: 'World', language: 'Hindi', url: 'https://cdn.pixabay.com/download/audio/2021/11/24/audio_141639f7d4.mp3' },
-  { title: 'Taj Mahal Serenity', artist: 'Zen_Man', duration: 190, genre: 'Ambient', language: 'Hindi', url: 'https://cdn.pixabay.com/download/audio/2022/08/03/audio_37b7947171.mp3' },
-  { title: 'Modern India', artist: 'QubeSounds', duration: 125, genre: 'Electronic', language: 'Hindi', url: 'https://cdn.pixabay.com/download/audio/2022/08/26/audio_83d31e975c.mp3' },
-  
-  // Spanish
-  { title: 'Ritmo Caliente', artist: 'Anton_Vlasov', duration: 158, genre: 'Latin', language: 'Spanish', url: 'https://cdn.pixabay.com/download/audio/2022/01/21/audio_233983f23a.mp3' },
-  { title: 'Barcelona Nights', artist: 'Music_For_Videos', duration: 175, genre: 'Pop', language: 'Spanish', url: 'https://cdn.pixabay.com/download/audio/2022/09/27/audio_3316938210.mp3' },
-  { title: 'Spanish Guitar', artist: 'Grand_Project', duration: 140, genre: 'Acoustic', language: 'Spanish', url: 'https://cdn.pixabay.com/download/audio/2022/03/23/audio_e046a11e13.mp3' },
-  { title: 'Fiesta', artist: 'Olexy', duration: 130, genre: 'Latin', language: 'Spanish', url: 'https://cdn.pixabay.com/download/audio/2023/08/04/audio_328906059d.mp3' },
-  { title: 'Cuban Groove', artist: 'Musictown', duration: 152, genre: 'Jazz', language: 'Spanish', url: 'https://cdn.pixabay.com/download/audio/2022/04/26/audio_1c424a5f25.mp3' },
-  { title: 'Andalusia', artist: 'tobylane', duration: 188, genre: 'World', language: 'Spanish', url: 'https://cdn.pixabay.com/download/audio/2022/09/05/audio_c2278e3c3b.mp3' },
-  { title: 'Tango del Fuego', artist: 'Grand_Project', duration: 165, genre: 'Tango', language: 'Spanish', url: 'https://cdn.pixabay.com/download/audio/2023/04/23/audio_e9b418a09b.mp3' },
-  { title: 'Salsa', artist: 'AlexiAction', duration: 142, genre: 'Latin', language: 'Spanish', url: 'https://cdn.pixabay.com/download/audio/2023/10/24/audio_a0a955c48b.mp3' },
-  { title: 'Madrid Melody', artist: 'Penguinmusic', duration: 133, genre: 'Pop', language: 'Spanish', url: 'https://cdn.pixabay.com/download/audio/2022/08/02/audio_fd0766a50e.mp3' },
-  { title: 'Latin Summer', artist: 'Keyframe_Audio', duration: 120, genre: 'Latin', language: 'Spanish', url: 'https://cdn.pixabay.com/download/audio/2021/07/11/audio_133857e4e0.mp3' },
-  
-  // Punjabi
-  { title: 'Punjab Groove', artist: 'QubeSounds', duration: 145, genre: 'Bhangra', language: 'Punjabi', url: 'https://cdn.pixabay.com/download/audio/2022/08/26/audio_e7f1f31f9e.mp3' },
-  { title: 'Dhol Beats', artist: 'tobylane', duration: 138, genre: 'World', language: 'Punjabi', url: 'https://cdn.pixabay.com/download/audio/2022/04/26/audio_03d2e2b349.mp3' },
-  { title: 'Chandigarh Night', artist: 'AlexiAction', duration: 155, genre: 'Bhangra', language: 'Punjabi', url: 'https://cdn.pixabay.com/download/audio/2023/03/10/audio_f52309ce95.mp3' },
-  { title: 'Amritsar Celebration', artist: 'Musictown', duration: 160, genre: 'World', language: 'Punjabi', url: 'https://cdn.pixabay.com/download/audio/2022/04/26/audio_e79c657519.mp3' },
-  { title: 'Modern Bhangra', artist: 'QubeSounds', duration: 130, genre: 'Electronic', language: 'Punjabi', url: 'https://cdn.pixabay.com/download/audio/2022/08/26/audio_034c4f3465.mp3' },
-  { title: 'Punjabi Wedding', artist: 'AShamaluevMusic', duration: 175, genre: 'Bhangra', language: 'Punjabi', url: 'https://cdn.pixabay.com/download/audio/2021/11/24/audio_349d53351a.mp3' },
-  { title: 'Vaisakhi', artist: 'Wolves', duration: 142, genre: 'World', language: 'Punjabi', url: 'https://cdn.pixabay.com/download/audio/2023/03/30/audio_5179237699.mp3' },
-  { title: 'Lohri Fire', artist: 'SergeQuadrado', duration: 150, genre: 'World', language: 'Punjabi', url: 'https://cdn.pixabay.com/download/audio/2021/11/24/audio_f2d5966c4c.mp3' },
-  { title: 'Golden Temple', artist: 'Zen_Man', duration: 210, genre: 'Meditation', language: 'Punjabi', url: 'https://cdn.pixabay.com/download/audio/2022/08/03/audio_c48b26c68a.mp3' },
-  { title: 'Fields of Punjab', artist: 'NaturesEye', duration: 198, genre: 'Ambient', language: 'Punjabi', url: 'https://cdn.pixabay.com/download/audio/2023/04/24/audio_d20a11a84f.mp3' },
-  
-  // Other Languages & Genres
-  { title: 'African Savannah', artist: 'Grand_Project', duration: 160, genre: 'African', language: 'Instrumental', url: 'https://cdn.pixabay.com/download/audio/2023/04/23/audio_9242551a1c.mp3' },
-  { title: 'Tokyo Lofi', artist: 'FASSounds', duration: 180, genre: 'Lofi', language: 'Japanese', url: 'https://cdn.pixabay.com/download/audio/2022/01/21/audio_1482d56bce.mp3' },
-  { title: 'Irish Jig', artist: 'AShamaluevMusic', duration: 120, genre: 'Folk', language: 'Irish', url: 'https://cdn.pixabay.com/download/audio/2021/11/24/audio_c3e60a9c8f.mp3' },
-  { title: 'Arabian Nights', artist: 'SergeQuadrado', duration: 170, genre: 'Arabic', language: 'Arabic', url: 'https://cdn.pixabay.com/download/audio/2022/04/26/audio_573f360e22.mp3' },
-  { title: 'French Cafe', artist: 'Music_For_Videos', duration: 145, genre: 'Jazz', language: 'French', url: 'https://cdn.pixabay.com/download/audio/2022/09/27/audio_c1e29e92d7.mp3' },
-  { title: 'Brazilian Samba', artist: 'Olexy', duration: 135, genre: 'Samba', language: 'Portuguese', url: 'https://cdn.pixabay.com/download/audio/2023/08/04/audio_55a297fc95.mp3' },
-  { title: 'K-Pop Vibe', artist: 'QubeSounds', duration: 128, genre: 'K-Pop', language: 'Korean', url: 'https://cdn.pixabay.com/download/audio/2023/03/10/audio_17a419c8f0.mp3' },
-  { title: 'Russian Folk', artist: 'Grand_Project', duration: 155, genre: 'Folk', language: 'Russian', url: 'https://cdn.pixabay.com/download/audio/2022/03/23/audio_03d9735d13.mp3' },
-  { title: 'German Polka', artist: 'Musictown', duration: 140, genre: 'Folk', language: 'German', url: 'https://cdn.pixabay.com/download/audio/2022/04/26/audio_9fd6b110a2.mp3' },
-  { title: 'Hawaiian Ukulele', artist: 'DayFox', duration: 165, genre: 'Acoustic', language: 'Hawaiian', url: 'https://cdn.pixabay.com/download/audio/2022/10/18/audio_6590219454.mp3' },
-];
+// Download a default thumbnail image to use for all uploads
+const downloadDefaultThumbnail = async () => {
+  if (fs.existsSync(TEMP_THUMBNAIL_PATH)) {
+    console.log('🖼️  Using existing temporary thumbnail');
+    return TEMP_THUMBNAIL_PATH;
+  }
 
-const seedDB = async () => {
+  console.log('📥 Downloading default thumbnail...');
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log('✅ MongoDB connected for seeding.');
-
-    await Song.deleteMany({});
-    console.log('🧹 Cleared existing songs.');
-
-    const user = await User.findOne();
-    if (!user) {
-      console.error('❌ No user found. Please create a user before seeding.');
-      mongoose.disconnect();
-      return;
-    }
-    console.log(`📝 Using user "${user.name}" as the uploader.`);
-
-    // Create array to track which songs should be featured
-    const totalSongs = songData.length;
-    const featuredCount = Math.max(20, Math.floor(totalSongs * 0.4)); // At least 20 songs or 40% of total
-    const featuredIndices = [];
-    
-    // Randomly select songs to be featured
-    while (featuredIndices.length < featuredCount) {
-      const randomIndex = Math.floor(Math.random() * totalSongs);
-      if (!featuredIndices.includes(randomIndex)) {
-        featuredIndices.push(randomIndex);
-      }
-    }
-    
-    console.log(`🌟 Making ${featuredCount} out of ${totalSongs} songs featured`);
-
-    const songsToInsert = songData.map((song, index) => ({
-      ...song,
-      thumbnail: thumbnailUrls[Math.floor(Math.random() * thumbnailUrls.length)],
-      featured: featuredIndices.includes(index), // true if index is in featuredIndices
-      uploadedBy: user._id,
-    }));
-
-    await Song.insertMany(songsToInsert);
-    
-    // Log featured songs
-    const featuredSongs = songsToInsert.filter(song => song.featured);
-    console.log(`🌱 Successfully seeded ${songsToInsert.length} songs.`);
-    console.log(`🌟 Featured songs (${featuredSongs.length}):`);
-    featuredSongs.forEach(song => {
-      console.log(`   - "${song.title}" by ${song.artist} (${song.genre})`);
+    const response = await axios({
+      method: 'GET',
+      url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop',
+      responseType: 'stream'
     });
 
+    const writer = fs.createWriteStream(TEMP_THUMBNAIL_PATH);
+    response.data.pipe(writer);
+
+    return new Promise((resolve, reject) => {
+      writer.on('finish', () => {
+        console.log('✅ Default thumbnail downloaded successfully');
+        resolve(TEMP_THUMBNAIL_PATH);
+      });
+      writer.on('error', reject);
+    });
   } catch (error) {
-    console.error('❌ Error seeding the database:', error);
-  } finally {
-    await mongoose.disconnect();
-    console.log('🔌 MongoDB disconnected.');
+    console.error('❌ Failed to download thumbnail:', error.message);
+    throw error;
   }
 };
 
-seedDB();
+// Song metadata database with specific data for each song
+
+const songMetadata = {
+  // English songs
+  'bring-me-back-283196': {
+    artist: 'Echo Valley',
+    duration: 183,
+    genre: 'Pop',
+    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
+  },
+  'celtic-irish-scottish-tin-whistle-background-music-10455': {
+    artist: 'Celtic Winds',
+    duration: 245,
+    genre: 'Folk',
+    thumbnail: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop'
+  },
+  'english-poem-108554': {
+    artist: 'Spoken Dreams',
+    duration: 108,
+    genre: 'Spoken Word',
+    thumbnail: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&h=600&fit=crop'
+  },
+  'hark-the-herald-angels-sing-traditional-english-christmas-carol-178364': {
+    artist: 'Christmas Choir',
+    duration: 178,
+    genre: 'Christmas',
+    thumbnail: 'https://images.unsplash.com/photo-1544273677-6e4141727927?w=800&h=600&fit=crop'
+  },
+  'how-far-is-it-to-bethlehem-traditional-english-christmas-carol-178351': {
+    artist: 'Holiday Harmonies',
+    duration: 165,
+    genre: 'Christmas',
+    thumbnail: 'https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=800&h=600&fit=crop'
+  },
+  'i-want-to-dissolve-in-this-rain-405188': {
+    artist: 'Rainy Day Dreams',
+    duration: 225,
+    genre: 'Ambient',
+    thumbnail: 'https://images.unsplash.com/photo-1428592953211-077101b2021b?w=800&h=600&fit=crop'
+  },
+  'noctilucent-circuit-406493': {
+    artist: 'Electric Nights',
+    duration: 267,
+    genre: 'Electronic',
+    thumbnail: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=800&h=600&fit=crop'
+  },
+  'song-english-edm-296526': {
+    artist: 'Pulse Makers',
+    duration: 196,
+    genre: 'EDM',
+    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+  },
+  'sun-beneath-a-song-410790': {
+    artist: 'Golden Hour',
+    duration: 243,
+    genre: 'Indie',
+    thumbnail: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop'
+  },
+  'the-adventures-of-mr-hardy_30sec-175535': {
+    artist: 'Adventure Tales',
+    duration: 30,
+    genre: 'Soundtrack',
+    thumbnail: 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=800&h=600&fit=crop'
+  },
+  'the-adventures-of-mr-hardy_60sec-175536': {
+    artist: 'Adventure Tales',
+    duration: 60,
+    genre: 'Soundtrack',
+    thumbnail: 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=800&h=600&fit=crop'
+  },
+  'the-black-oath-of-white-fire-399835': {
+    artist: 'Dark Symphony',
+    duration: 289,
+    genre: 'Cinematic',
+    thumbnail: 'https://images.unsplash.com/photo-1574097656146-0b43b7660cb6?w=800&h=600&fit=crop'
+  },
+  'the-last-phantom-rose-alive-409395': {
+    artist: 'Phantom Rose',
+    duration: 312,
+    genre: 'Gothic Rock',
+    thumbnail: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop'
+  },
+  'the-old-mask-of-new-faces-409394': {
+    artist: 'Masked Identity',
+    duration: 278,
+    genre: 'Alternative',
+    thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop'
+  },
+  'the-shape-of-disorder-410788': {
+    artist: 'Chaos Theory',
+    duration: 235,
+    genre: 'Experimental',
+    thumbnail: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&h=600&fit=crop'
+  },
+  'the-song-of-alone-410791': {
+    artist: 'Solitude',
+    duration: 198,
+    genre: 'Melancholic',
+    thumbnail: 'https://images.unsplash.com/photo-1445985543470-41fba5c3144a?w=800&h=600&fit=crop'
+  },
+  'we-wish-you-a-merry-christmas-english-carol-sheppard-flute-8848': {
+    artist: 'Flute Ensemble',
+    duration: 145,
+    genre: 'Christmas',
+    thumbnail: 'https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=800&h=600&fit=crop'
+  },
+  'what-is-not-for-me-410786': {
+    artist: 'Reflection',
+    duration: 207,
+    genre: 'Indie Pop',
+    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
+  },
+  'where-tomorrow-refuses-to-arrive-400834': {
+    artist: 'Time Drift',
+    duration: 256,
+    genre: 'Progressive',
+    thumbnail: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&h=600&fit=crop'
+  },
+  'whispers-in-the-broken-horizon-400833': {
+    artist: 'Broken Horizon',
+    duration: 234,
+    genre: 'Atmospheric',
+    thumbnail: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop'
+  },
+
+  // Hindi songs
+  'Drama Queen': {
+    artist: 'Vishal Dadlani',
+    duration: 195,
+    genre: 'Bollywood',
+    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
+  },
+  'Lat Lag Gayee': {
+    artist: 'Benny Dayal',
+    duration: 212,
+    genre: 'Bollywood',
+    thumbnail: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&h=600&fit=crop'
+  },
+  'Lonely': {
+    artist: 'Armaan Malik',
+    duration: 178,
+    genre: 'Bollywood Pop',
+    thumbnail: 'https://images.unsplash.com/photo-1445985543470-41fba5c3144a?w=800&h=600&fit=crop'
+  },
+  'Make Some Noise For The Desi Boyz': {
+    artist: 'RDB',
+    duration: 223,
+    genre: 'Bollywood Dance',
+    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
+  },
+  'mein_agar_kahoon_keys': {
+    artist: 'Udit Narayan',
+    duration: 267,
+    genre: 'Bollywood Romance',
+    thumbnail: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop'
+  },
+  'Mungda': {
+    artist: 'Jyotica Tangri',
+    duration: 189,
+    genre: 'Bollywood Item',
+    thumbnail: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&h=600&fit=crop'
+  },
+  'Oh Ho Ho Ho (Remix)': {
+    artist: 'Sunidhi Chauhan',
+    duration: 198,
+    genre: 'Bollywood Remix',
+    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
+  },
+  'She Move It Like (1)': {
+    artist: 'Badshah',
+    duration: 167,
+    genre: 'Hip Hop Hindi',
+    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+  },
+  'She Move It Like': {
+    artist: 'Badshah',
+    duration: 167,
+    genre: 'Hip Hop Hindi',
+    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+  },
+
+  // Punjabi songs
+  'Cheques': {
+    artist: 'Shubh',
+    duration: 156,
+    genre: 'Punjabi Pop',
+    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
+  },
+  'For A Reason (1)': {
+    artist: 'Sidhu Moose Wala',
+    duration: 203,
+    genre: 'Punjabi Hip Hop',
+    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+  },
+  'For A Reason': {
+    artist: 'Sidhu Moose Wala',
+    duration: 203,
+    genre: 'Punjabi Hip Hop',
+    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+  },
+  'I Really Do....': {
+    artist: 'Karan Aujla',
+    duration: 187,
+    genre: 'Punjabi Romance',
+    thumbnail: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop'
+  },
+  'MF Gabhru!': {
+    artist: 'AP Dhillon',
+    duration: 145,
+    genre: 'Punjabi Trap',
+    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+  },
+  'Supreme': {
+    artist: 'Shubh',
+    duration: 172,
+    genre: 'Punjabi Pop',
+    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
+  },
+  'Wavy (1)': {
+    artist: 'Gurinder Gill',
+    duration: 189,
+    genre: 'Punjabi Urban',
+    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+  },
+  'Wavy': {
+    artist: 'Gurinder Gill',
+    duration: 189,
+    genre: 'Punjabi Urban',
+    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+  },
+  'Winning Speech': {
+    artist: 'Karan Aujla',
+    duration: 234,
+    genre: 'Punjabi Rap',
+    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+  }
+};
+
+// Fallback data for songs not in metadata
+const fallbackData = {
+  english: {
+    artists: ['The Beatles', 'Ed Sheeran', 'Taylor Swift', 'Adele', 'Coldplay', 'Imagine Dragons', 'OneRepublic', 'Maroon 5'],
+    genres: ['Pop', 'Rock', 'Alternative', 'Indie', 'Electronic', 'Folk', 'Country', 'R&B'],
+    thumbnails: [
+      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+    ]
+  },
+  hindi: {
+    artists: ['Arijit Singh', 'Shreya Ghoshal', 'Armaan Malik', 'Sunidhi Chauhan', 'Rahat Fateh Ali Khan', 'Vishal Dadlani', 'Shilpa Rao'],
+    genres: ['Bollywood', 'Bollywood Pop', 'Bollywood Romance', 'Bollywood Dance', 'Sufi', 'Ghazal'],
+    thumbnails: [
+      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop'
+    ]
+  },
+  punjabi: {
+    artists: ['Sidhu Moose Wala', 'Karan Aujla', 'AP Dhillon', 'Shubh', 'Diljit Dosanjh', 'Gurdas Maan', 'Ammy Virk'],
+    genres: ['Punjabi Pop', 'Punjabi Hip Hop', 'Bhangra', 'Punjabi Folk', 'Punjabi Trap', 'Punjabi Romance'],
+    thumbnails: [
+      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop'
+    ]
+  }
+};
+
+const getSongData = (songName, language) => {
+  const cleanName = songName.replace(/\.[^/.]+$/, ''); // Remove extension
+  
+  if (songMetadata[cleanName]) {
+    return songMetadata[cleanName];
+  }
+  
+  // Fallback to random data
+  const fallback = fallbackData[language] || fallbackData.english;
+  return {
+    artist: fallback.artists[Math.floor(Math.random() * fallback.artists.length)],
+    duration: Math.floor(Math.random() * 120) + 120, // 120-240 seconds
+    genre: fallback.genres[Math.floor(Math.random() * fallback.genres.length)],
+    thumbnail: fallback.thumbnails[Math.floor(Math.random() * fallback.thumbnails.length)]
+  };
+};
+
+const uploadSong = async (songPath, language, thumbnailPath) => {
+  const songName = path.basename(songPath, path.extname(songPath));
+  console.log(`Preparing: ${songName} (Language: ${language})`);
+
+  const songData = getSongData(songName, language);
+  const isFeatured = Math.random() < 0.25; // 25% chance to be featured
+
+  try {
+    const form = new FormData();
+    
+    // Append files
+    form.append('song', fs.createReadStream(songPath));
+    form.append('thumbnail', fs.createReadStream(thumbnailPath));
+    
+    // Append all other fields as strings
+    form.append('title', songName.replace(/-/g, ' ').replace(/_/g, ' ')); 
+    form.append('artist', songData.artist);
+    form.append('duration', songData.duration.toString());
+    form.append('language', language);
+    form.append('genre', songData.genre);
+    form.append('featured', isFeatured.toString()); // Convert boolean to string
+
+    console.log(`  - Artist: ${songData.artist}`);
+    console.log(`  - Duration: ${songData.duration}s`);
+    console.log(`  - Genre: ${songData.genre}`);
+    console.log(`  - Featured: ${isFeatured ? 'Yes' : 'No'}`);
+
+    const response = await axios.post(API_URL, form, {
+      headers: { 
+        ...form.getHeaders(), 
+        'x-auth-token': AUTH_TOKEN,
+        'Accept': 'application/json'
+      },
+      timeout: 90000, // 90 second timeout
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity
+    });
+    
+    console.log(`  ✅ Success: Uploaded ${songName}\n`);
+  } catch (error) {
+    console.error(`  ❌ Critical Error for ${songName}:`);
+    if (error.response) {
+      console.error(`    Status: ${error.response.status}`);
+      console.error(`    Data:`, error.response.data);
+    } else if (error.request) {
+      console.error(`    Network Error: ${error.message}`);
+    } else {
+      console.error(`    Error: ${error.message}`);
+    }
+    console.log('');
+  }
+};
+
+const run = async () => {
+  console.log('🎵 Starting API-based bulk upload from subfolders...\n');
+  
+  // Check if songs directory exists
+  if (!fs.existsSync(SONGS_BASE_DIRECTORY)) {
+    return console.error(`❌ Error: Directory not found at ${SONGS_BASE_DIRECTORY}`);
+  }
+
+  // Download default thumbnail first
+  let thumbnailPath;
+  try {
+    thumbnailPath = await downloadDefaultThumbnail();
+  } catch (error) {
+    console.error('❌ Failed to prepare thumbnail. Exiting...');
+    return;
+  }
+
+  const languageFolders = fs.readdirSync(SONGS_BASE_DIRECTORY, { withFileTypes: true })
+    .filter(dirent => dirent.isDirectory())
+    .map(dirent => dirent.name);
+
+  if (languageFolders.length === 0) {
+    console.log('⚠️  No language subfolders found in songs-to-upload.');
+    return;
+  }
+
+  console.log(`📁 Found ${languageFolders.length} language folders: ${languageFolders.join(', ')}\n`);
+
+  for (const language of languageFolders) {
+    console.log(`🔄 Processing folder: ${language.toUpperCase()}...`);
+    const languagePath = path.join(SONGS_BASE_DIRECTORY, language);
+    const files = fs.readdirSync(languagePath);
+    const songFiles = files.filter(file => file.endsWith('.mp3') || file.endsWith('.wav') || file.endsWith('.m4a'));
+
+    if (songFiles.length === 0) {
+      console.log(`⚠️  No songs found in ${language} folder.\n`);
+      continue;
+    }
+
+    console.log(`📊 Found ${songFiles.length} songs in ${language} folder\n`);
+
+    for (let i = 0; i < songFiles.length; i++) {
+      const songFile = songFiles[i];
+      console.log(`[${i + 1}/${songFiles.length}]`);
+      await uploadSong(path.join(languagePath, songFile), language, thumbnailPath);
+      
+      // Add a small delay to avoid overwhelming the server
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+  }
+  
+  // Clean up temporary thumbnail
+  if (fs.existsSync(TEMP_THUMBNAIL_PATH)) {
+    fs.unlinkSync(TEMP_THUMBNAIL_PATH);
+    console.log('🧹 Cleaned up temporary thumbnail file');
+  }
+  
+  console.log('🎉 Bulk upload finished!');
+  console.log('📈 Summary: Check your database for all uploaded songs with proper metadata.');
+};
+
+run().catch(console.error);
