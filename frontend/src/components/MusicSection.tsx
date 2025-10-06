@@ -133,23 +133,20 @@ const MusicSection: React.FC<MusicSectionProps> = ({ title, fetchUrl, items, typ
   const handleSongClick = (song: Song) => {
     console.log('Original song data:', song);
     
-    // TEMPORARY FIX: Use a working test audio URL that allows CORS
-    const testAudioUrl = 'https://www.learningcontainer.com/wp-content/uploads/2020/02/Kalimba.mp3';
-    
     // Transform the song data to match the PlayerContext Song interface
     const playerSong = {
       ...song,
-      audioUrl: testAudioUrl, // Use test URL instead of: song.url || song.audioUrl,
+      audioUrl: song.url || song.audioUrl,
       albumArt: song.thumbnail || song.albumArt,
     };
     
     console.log('Transformed player song:', playerSong);
-    console.log('Using test audio URL:', testAudioUrl);
+    console.log('Using actual song URL:', playerSong.audioUrl);
     
     // Transform all songs in the current songs array for the queue
     const transformedSongs = songs.map(s => ({
       ...s,
-      audioUrl: testAudioUrl, // Use test URL for all songs in queue
+      audioUrl: s.url || s.audioUrl,
       albumArt: s.thumbnail || s.albumArt,
     }));
     
