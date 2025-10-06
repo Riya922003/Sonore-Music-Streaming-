@@ -121,6 +121,11 @@ router.post(
 
       const [songResult, thumbnailResult] = await Promise.all([uploadSongPromise, uploadThumbnailPromise]);
 
+      // Debug: Log received form data
+      console.log('Upload route - received req.body:', req.body);
+      console.log('Upload route - req.body.genre:', req.body.genre);
+      console.log('Upload route - req.body.language:', req.body.language);
+
       const newSong = new Song({
         title: req.body.title,
         artist: req.body.artist,

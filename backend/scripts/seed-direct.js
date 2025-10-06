@@ -4,8 +4,8 @@ const path = require('path');
 const FormData = require('form-data');
 
 // --- CONFIGURATION ---
-const API_URL = 'https://backend-deployment-u389.onrender.com/api/songs/upload'; 
-const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZTI3ZTAyNDJiYzY1ZjMyZjgxZWZjMSIsIm5hbWUiOiJSaXlhMSIsImVtYWlsIjoicml5YTFAZ21haWwuY29tIiwiaWF0IjoxNzU5NzQ3MzEzLCJleHAiOjE3NTk3NjUzMTN9.ZlGCcYjqLalSCosgcQVLf5OeWCBPCZjWYubIU1UvVDw'; 
+const API_URL = 'http://localhost:5000/api/songs/upload'; 
+const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZTNhM2JkZmI3Y2ZiZTZkMWMzNTM5NiIsIm5hbWUiOiJUZXN0IFVzZXIiLCJlbWFpbCI6InRlc3R1c2VyQGV4YW1wbGUuY29tIiwiaWF0IjoxNzU5NzQ5MDU0LCJleHAiOjE3NTk3NjcwNTR9.8rpLsI3nXnaXdOHXPP5KW9nuIZsEokbnUqO4vulPFCg'; 
 const SONGS_BASE_DIRECTORY = path.join(__dirname, '..', 'songs-to-upload');
 const TEMP_THUMBNAIL_PATH = path.join(__dirname, 'temp_thumbnail.jpg');
 // --- END CONFIGURATION ---
@@ -352,7 +352,11 @@ const uploadSong = async (songPath, language, thumbnailPath) => {
     console.log(`  - Artist: ${songData.artist}`);
     console.log(`  - Duration: ${songData.duration}s`);
     console.log(`  - Genre: ${songData.genre}`);
+    console.log(`  - Language: ${language}`);
     console.log(`  - Featured: ${isFeatured ? 'Yes' : 'No'}`);
+
+    // Debug: Log the data being sent (without iterating form.entries)
+    console.log('  - Sending FormData with fields: title, artist, duration, language, genre, featured, song, thumbnail');
 
     const response = await axios.post(API_URL, form, {
       headers: { 
