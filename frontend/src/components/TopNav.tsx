@@ -1,9 +1,9 @@
-import { Search, Bell, Settings, LogOut } from 'lucide-react';
+import { Search, Bell, Settings } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import StarBorder from './StarBorder';
 
 const TopNav: React.FC = () => {
-  const { user, logout, openAuthModal } = useAuth();
+  const { user, openAuthModal } = useAuth();
 
   const getUserInitial = (name: string | undefined) => {
     if (!name || name.length === 0) {
@@ -72,7 +72,7 @@ const TopNav: React.FC = () => {
               className="custom-class"
               color="white"
               speed="5s"
-              thickness="3"
+              thickness={3}
               onClick={openAuthModal}
             >
               Dive-in

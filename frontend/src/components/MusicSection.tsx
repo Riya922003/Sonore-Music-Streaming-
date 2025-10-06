@@ -62,7 +62,6 @@ const MusicSection: React.FC<MusicSectionProps> = ({ title, fetchUrl, items, typ
   const [error, setError] = useState<string | null>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
-  const [isHovered, setIsHovered] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { playSong } = usePlayer();
 
@@ -247,7 +246,7 @@ const MusicSection: React.FC<MusicSectionProps> = ({ title, fetchUrl, items, typ
   const displayItems = Array.isArray(items) ? items : Array.isArray(songs) ? songs : [];
 
   return (
-    <section className="mb-12 w-full group" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+    <section className="mb-12 w-full group">
       <h2 className="text-2xl font-bold text-white mb-6">{title}</h2>
       
       {displayItems.length === 0 ? (
