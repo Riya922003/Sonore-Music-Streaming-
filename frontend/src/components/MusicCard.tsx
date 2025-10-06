@@ -75,6 +75,30 @@ const MusicCard: React.FC<MusicCardProps> = ({
           alt={title}
           className={`w-full ${classes.image} object-cover rounded-lg transition-transform duration-300`}
           loading="lazy"
+          onError={(e) => {
+            const target = e.currentTarget;
+            if (!target.dataset.fallbackAttempt) {
+              // First fallback: try a generic music image
+              target.dataset.fallbackAttempt = '1';
+              target.src = 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop';
+            } else if (target.dataset.fallbackAttempt === '1') {
+              // Second fallback: use a colored placeholder
+              target.dataset.fallbackAttempt = '2';
+              const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57'];
+              const colorIndex = Math.abs(title.split('').reduce((a, b) => {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+              }, 0)) % colors.length;
+              const color = colors[colorIndex];
+              target.src = `data:image/svg+xml;base64,${btoa(`
+                <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="200" height="200" fill="${color}"/>
+                  <circle cx="100" cy="100" r="40" fill="white" opacity="0.3"/>
+                  <path d="M85 85V115L110 100L85 85Z" fill="white" opacity="0.8"/>
+                </svg>
+              `)}`;
+            }
+          }}
         />
         {showPlayButton && (
           <button 

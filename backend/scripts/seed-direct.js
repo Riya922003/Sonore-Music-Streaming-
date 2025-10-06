@@ -49,121 +49,121 @@ const songMetadata = {
     artist: 'Echo Valley',
     duration: 183,
     genre: 'Pop',
-    thumbnail: 'https://images.unsplash.com/photo-1520637836862-4d197d17c91a?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'celtic-irish-scottish-tin-whistle-background-music-10455': {
     artist: 'Celtic Winds',
     duration: 245,
     genre: 'Folk',
-    thumbnail: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'english-poem-108554': {
     artist: 'Spoken Dreams',
     duration: 108,
     genre: 'Spoken Word',
-    thumbnail: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'hark-the-herald-angels-sing-traditional-english-christmas-carol-178364': {
     artist: 'Christmas Choir',
     duration: 178,
     genre: 'Christmas',
-    thumbnail: 'https://images.unsplash.com/photo-1544273677-6e4141727927?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'how-far-is-it-to-bethlehem-traditional-english-christmas-carol-178351': {
     artist: 'Holiday Harmonies',
     duration: 165,
     genre: 'Christmas',
-    thumbnail: 'https://images.unsplash.com/photo-1512389142860-9c449e58a543?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1544273677-6e4141727927?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'i-want-to-dissolve-in-this-rain-405188': {
     artist: 'Rainy Day Dreams',
     duration: 225,
     genre: 'Ambient',
-    thumbnail: 'https://images.unsplash.com/photo-1428592953211-077101b2021b?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1428592953211-077101b2021b?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'noctilucent-circuit-406493': {
     artist: 'Electric Nights',
     duration: 267,
     genre: 'Electronic',
-    thumbnail: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'song-english-edm-296526': {
     artist: 'Pulse Makers',
     duration: 196,
     genre: 'EDM',
-    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'sun-beneath-a-song-410790': {
     artist: 'Golden Hour',
     duration: 243,
     genre: 'Indie',
-    thumbnail: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'the-adventures-of-mr-hardy_30sec-175535': {
     artist: 'Adventure Tales',
     duration: 30,
     genre: 'Soundtrack',
-    thumbnail: 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'the-adventures-of-mr-hardy_60sec-175536': {
     artist: 'Adventure Tales',
     duration: 60,
     genre: 'Soundtrack',
-    thumbnail: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'the-black-oath-of-white-fire-399835': {
     artist: 'Dark Symphony',
     duration: 289,
     genre: 'Cinematic',
-    thumbnail: 'https://images.unsplash.com/photo-1574097656146-0b43b7660cb6?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1574097656146-0b43b7660cb6?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'the-last-phantom-rose-alive-409395': {
     artist: 'Phantom Rose',
     duration: 312,
     genre: 'Gothic Rock',
-    thumbnail: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1520637836862-4d197d17c91a?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'the-old-mask-of-new-faces-409394': {
     artist: 'Masked Identity',
     duration: 278,
     genre: 'Alternative',
-    thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'the-shape-of-disorder-410788': {
     artist: 'Chaos Theory',
     duration: 235,
     genre: 'Experimental',
-    thumbnail: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'the-song-of-alone-410791': {
     artist: 'Solitude',
     duration: 198,
     genre: 'Melancholic',
-    thumbnail: 'https://images.unsplash.com/photo-1445985543470-41fba5c3144a?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1445985543470-41fba5c3144a?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'we-wish-you-a-merry-christmas-english-carol-sheppard-flute-8848': {
     artist: 'Flute Ensemble',
     duration: 145,
     genre: 'Christmas',
-    thumbnail: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'what-is-not-for-me-410786': {
     artist: 'Reflection',
     duration: 207,
     genre: 'Indie Pop',
-    thumbnail: 'https://images.unsplash.com/photo-1484755560615-676bb5f0e3b6?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1484755560615-676bb5f0e3b6?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'where-tomorrow-refuses-to-arrive-400834': {
     artist: 'Time Drift',
     duration: 256,
     genre: 'Progressive',
-    thumbnail: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&h=600&fit=crop&auto=format&q=80'
   },
   'whispers-in-the-broken-horizon-400833': {
     artist: 'Broken Horizon',
     duration: 234,
     genre: 'Atmospheric',
-    thumbnail: 'https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=800&h=600&fit=crop'
+    thumbnail: 'https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=800&h=600&fit=crop&auto=format&q=80'
   },
 
   // Hindi songs
@@ -171,55 +171,55 @@ const songMetadata = {
     artist: 'Vishal Dadlani',
     duration: 195,
     genre: 'Bollywood',
-    thumbnail: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/895/Hasee-Toh-Phasee-Hindi-2014-500x500.jpg'
   },
   'Lat Lag Gayee': {
     artist: 'Benny Dayal',
     duration: 212,
     genre: 'Bollywood',
-    thumbnail: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/143/Race-2-Hindi-2013-500x500.jpg'
   },
   'Lonely': {
     artist: 'Armaan Malik',
     duration: 178,
     genre: 'Bollywood Pop',
-    thumbnail: 'https://images.unsplash.com/photo-1445985543470-41fba5c3144a?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/764/How-Long-English-2017-500x500.jpg'
   },
   'Make Some Noise For The Desi Boyz': {
     artist: 'RDB',
     duration: 223,
     genre: 'Bollywood Dance',
-    thumbnail: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/726/Desi-Boyz-Hindi-2011-500x500.jpg'
   },
   'mein_agar_kahoon_keys': {
     artist: 'Udit Narayan',
     duration: 267,
     genre: 'Bollywood Romance',
-    thumbnail: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/117/Om-Shanti-Om-Hindi-2007-500x500.jpg'
   },
   'Mungda': {
     artist: 'Jyotica Tangri',
     duration: 189,
     genre: 'Bollywood Item',
-    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/168/Total-Dhamaal-Hindi-2019-500x500.jpg'
   },
   'Oh Ho Ho Ho (Remix)': {
     artist: 'Sunidhi Chauhan',
     duration: 198,
     genre: 'Bollywood Remix',
-    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/285/Bade-Miyan-Chote-Miyan-Hindi-1998-500x500.jpg'
   },
   'She Move It Like (1)': {
     artist: 'Badshah',
     duration: 167,
     genre: 'Hip Hop Hindi',
-    thumbnail: 'https://images.unsplash.com/photo-1520637836862-4d197d17c91a?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/779/Machine-Hindi-2017-500x500.jpg'
   },
   'She Move It Like': {
     artist: 'Badshah',
     duration: 167,
     genre: 'Hip Hop Hindi',
-    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/779/Machine-Hindi-2017-500x500.jpg'
   },
 
   // Punjabi songs
@@ -227,55 +227,55 @@ const songMetadata = {
     artist: 'Shubh',
     duration: 156,
     genre: 'Punjabi Pop',
-    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/017/Cheques-Punjabi-2022-20220722011950-500x500.jpg'
   },
   'For A Reason (1)': {
     artist: 'Sidhu Moose Wala',
     duration: 203,
     genre: 'Punjabi Hip Hop',
-    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/491/No-Name-Punjabi-2021-20210616121917-500x500.jpg'
   },
   'For A Reason': {
     artist: 'Sidhu Moose Wala',
     duration: 203,
     genre: 'Punjabi Hip Hop',
-    thumbnail: 'https://images.unsplash.com/photo-1520637836862-4d197d17c91a?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/491/No-Name-Punjabi-2021-20210616121917-500x500.jpg'
   },
   'I Really Do....': {
     artist: 'Karan Aujla',
     duration: 187,
     genre: 'Punjabi Romance',
-    thumbnail: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/123/Don-t-Worry-Punjabi-2021-20210616121903-500x500.jpg'
   },
   'MF Gabhru!': {
     artist: 'AP Dhillon',
     duration: 145,
     genre: 'Punjabi Trap',
-    thumbnail: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/378/Two-Hearts-Never-Die-Punjabi-2021-20210616121916-500x500.jpg'
   },
   'Supreme': {
     artist: 'Shubh',
     duration: 172,
     genre: 'Punjabi Pop',
-    thumbnail: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/847/Leo-Punjabi-2023-20230823181916-500x500.jpg'
   },
   'Wavy (1)': {
     artist: 'Gurinder Gill',
     duration: 189,
     genre: 'Punjabi Urban',
-    thumbnail: 'https://images.unsplash.com/photo-1484755560615-676bb5f0e3b6?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/445/Wavy-Punjabi-2022-20220722011948-500x500.jpg'
   },
   'Wavy': {
     artist: 'Gurinder Gill',
     duration: 189,
     genre: 'Punjabi Urban',
-    thumbnail: 'https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/445/Wavy-Punjabi-2022-20220722011948-500x500.jpg'
   },
   'Winning Speech': {
     artist: 'Karan Aujla',
     duration: 234,
     genre: 'Punjabi Rap',
-    thumbnail: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&h=600&fit=crop'
+    thumbnail: 'https://c.saavncdn.com/234/BTFU-Punjabi-2023-20230823181915-500x500.jpg'
   }
 };
 
@@ -285,27 +285,27 @@ const fallbackData = {
     artists: ['The Beatles', 'Ed Sheeran', 'Taylor Swift', 'Adele', 'Coldplay', 'Imagine Dragons', 'OneRepublic', 'Maroon 5'],
     genres: ['Pop', 'Rock', 'Alternative', 'Indie', 'Electronic', 'Folk', 'Country', 'R&B'],
     thumbnails: [
-      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop'
+      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&h=600&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop&auto=format&q=80'
     ]
   },
   hindi: {
     artists: ['Arijit Singh', 'Shreya Ghoshal', 'Armaan Malik', 'Sunidhi Chauhan', 'Rahat Fateh Ali Khan', 'Vishal Dadlani', 'Shilpa Rao'],
     genres: ['Bollywood', 'Bollywood Pop', 'Bollywood Romance', 'Bollywood Dance', 'Sufi', 'Ghazal'],
     thumbnails: [
-      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop'
+      'https://c.saavncdn.com/895/Hasee-Toh-Phasee-Hindi-2014-500x500.jpg',
+      'https://c.saavncdn.com/143/Race-2-Hindi-2013-500x500.jpg',
+      'https://c.saavncdn.com/117/Om-Shanti-Om-Hindi-2007-500x500.jpg'
     ]
   },
   punjabi: {
     artists: ['Sidhu Moose Wala', 'Karan Aujla', 'AP Dhillon', 'Shubh', 'Diljit Dosanjh', 'Gurdas Maan', 'Ammy Virk'],
     genres: ['Punjabi Pop', 'Punjabi Hip Hop', 'Bhangra', 'Punjabi Folk', 'Punjabi Trap', 'Punjabi Romance'],
     thumbnails: [
-      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=800&h=600&fit=crop',
-      'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop'
+      'https://c.saavncdn.com/017/Cheques-Punjabi-2022-20220722011950-500x500.jpg',
+      'https://c.saavncdn.com/491/No-Name-Punjabi-2021-20210616121917-500x500.jpg',
+      'https://c.saavncdn.com/378/Two-Hearts-Never-Die-Punjabi-2021-20210616121916-500x500.jpg'
     ]
   }
 };
