@@ -11,7 +11,7 @@ const MusicPlayer: React.FC = () => {
   const [volume, setVolume] = useState<number>(1);
   const [repeat, setRepeat] = useState<boolean>(false);
   const [usingFallback, setUsingFallback] = useState<boolean>(false);
-  const demoTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const demoTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Helper function to format seconds into "minutes:seconds" string
   const formatTime = (seconds: number): string => {
