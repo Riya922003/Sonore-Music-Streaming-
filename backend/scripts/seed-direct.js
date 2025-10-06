@@ -49,31 +49,31 @@ const songMetadata = {
     artist: 'Echo Valley',
     duration: 183,
     genre: 'Pop',
-    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop&auto=format&q=80'
+    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'celtic-irish-scottish-tin-whistle-background-music-10455': {
     artist: 'Celtic Winds',
     duration: 245,
     genre: 'Folk',
-    thumbnail: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop&auto=format&q=80'
+    thumbnail: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'english-poem-108554': {
     artist: 'Spoken Dreams',
     duration: 108,
     genre: 'Spoken Word',
-    thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop&auto=format&q=80'
+    thumbnail: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'hark-the-herald-angels-sing-traditional-english-christmas-carol-178364': {
     artist: 'Christmas Choir',
     duration: 178,
     genre: 'Christmas',
-    thumbnail: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&h=600&fit=crop&auto=format&q=80'
+    thumbnail: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'how-far-is-it-to-bethlehem-traditional-english-christmas-carol-178351': {
     artist: 'Holiday Harmonies',
     duration: 165,
     genre: 'Christmas',
-    thumbnail: 'https://images.unsplash.com/photo-1544273677-6e4141727927?w=800&h=600&fit=crop&auto=format&q=80'
+    thumbnail: 'https://images.unsplash.com/photo-1544273677-6e4141727927?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'i-want-to-dissolve-in-this-rain-405188': {
     artist: 'Rainy Day Dreams',
@@ -171,55 +171,55 @@ const songMetadata = {
     artist: 'Vishal Dadlani',
     duration: 195,
     genre: 'Bollywood',
-    thumbnail: 'https://c.saavncdn.com/895/Hasee-Toh-Phasee-Hindi-2014-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'Lat Lag Gayee': {
     artist: 'Benny Dayal',
     duration: 212,
     genre: 'Bollywood',
-    thumbnail: 'https://c.saavncdn.com/143/Race-2-Hindi-2013-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'Lonely': {
     artist: 'Armaan Malik',
     duration: 178,
     genre: 'Bollywood Pop',
-    thumbnail: 'https://c.saavncdn.com/764/How-Long-English-2017-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'Make Some Noise For The Desi Boyz': {
     artist: 'RDB',
     duration: 223,
     genre: 'Bollywood Dance',
-    thumbnail: 'https://c.saavncdn.com/726/Desi-Boyz-Hindi-2011-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'mein_agar_kahoon_keys': {
     artist: 'Udit Narayan',
     duration: 267,
     genre: 'Bollywood Romance',
-    thumbnail: 'https://c.saavncdn.com/117/Om-Shanti-Om-Hindi-2007-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'Mungda': {
     artist: 'Jyotica Tangri',
     duration: 189,
     genre: 'Bollywood Item',
-    thumbnail: 'https://c.saavncdn.com/168/Total-Dhamaal-Hindi-2019-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1445985543470-41fba5c3144a?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'Oh Ho Ho Ho (Remix)': {
     artist: 'Sunidhi Chauhan',
     duration: 198,
     genre: 'Bollywood Remix',
-    thumbnail: 'https://c.saavncdn.com/285/Bade-Miyan-Chote-Miyan-Hindi-1998-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1520637836862-4d197d17c91a?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'She Move It Like (1)': {
     artist: 'Badshah',
     duration: 167,
     genre: 'Hip Hop Hindi',
-    thumbnail: 'https://c.saavncdn.com/779/Machine-Hindi-2017-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'She Move It Like': {
     artist: 'Badshah',
     duration: 167,
     genre: 'Hip Hop Hindi',
-    thumbnail: 'https://c.saavncdn.com/779/Machine-Hindi-2017-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1484755560615-676bb5f0e3b6?w=500&h=500&fit=crop&auto=format&q=80'
   },
 
   // Punjabi songs
@@ -227,55 +227,55 @@ const songMetadata = {
     artist: 'Shubh',
     duration: 156,
     genre: 'Punjabi Pop',
-    thumbnail: 'https://c.saavncdn.com/017/Cheques-Punjabi-2022-20220722011950-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'For A Reason (1)': {
     artist: 'Sidhu Moose Wala',
     duration: 203,
     genre: 'Punjabi Hip Hop',
-    thumbnail: 'https://c.saavncdn.com/491/No-Name-Punjabi-2021-20210616121917-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'For A Reason': {
     artist: 'Sidhu Moose Wala',
     duration: 203,
     genre: 'Punjabi Hip Hop',
-    thumbnail: 'https://c.saavncdn.com/491/No-Name-Punjabi-2021-20210616121917-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'I Really Do....': {
     artist: 'Karan Aujla',
     duration: 187,
     genre: 'Punjabi Romance',
-    thumbnail: 'https://c.saavncdn.com/123/Don-t-Worry-Punjabi-2021-20210616121903-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'MF Gabhru!': {
     artist: 'AP Dhillon',
     duration: 145,
     genre: 'Punjabi Trap',
-    thumbnail: 'https://c.saavncdn.com/378/Two-Hearts-Never-Die-Punjabi-2021-20210616121916-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1574097656146-0b43b7660cb6?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'Supreme': {
     artist: 'Shubh',
     duration: 172,
     genre: 'Punjabi Pop',
-    thumbnail: 'https://c.saavncdn.com/847/Leo-Punjabi-2023-20230823181916-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'Wavy (1)': {
     artist: 'Gurinder Gill',
     duration: 189,
     genre: 'Punjabi Urban',
-    thumbnail: 'https://c.saavncdn.com/445/Wavy-Punjabi-2022-20220722011948-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'Wavy': {
     artist: 'Gurinder Gill',
     duration: 189,
     genre: 'Punjabi Urban',
-    thumbnail: 'https://c.saavncdn.com/445/Wavy-Punjabi-2022-20220722011948-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=500&fit=crop&auto=format&q=80'
   },
   'Winning Speech': {
     artist: 'Karan Aujla',
     duration: 234,
     genre: 'Punjabi Rap',
-    thumbnail: 'https://c.saavncdn.com/234/BTFU-Punjabi-2023-20230823181915-500x500.jpg'
+    thumbnail: 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=500&h=500&fit=crop&auto=format&q=80'
   }
 };
 
@@ -294,18 +294,18 @@ const fallbackData = {
     artists: ['Arijit Singh', 'Shreya Ghoshal', 'Armaan Malik', 'Sunidhi Chauhan', 'Rahat Fateh Ali Khan', 'Vishal Dadlani', 'Shilpa Rao'],
     genres: ['Bollywood', 'Bollywood Pop', 'Bollywood Romance', 'Bollywood Dance', 'Sufi', 'Ghazal'],
     thumbnails: [
-      'https://c.saavncdn.com/895/Hasee-Toh-Phasee-Hindi-2014-500x500.jpg',
-      'https://c.saavncdn.com/143/Race-2-Hindi-2013-500x500.jpg',
-      'https://c.saavncdn.com/117/Om-Shanti-Om-Hindi-2007-500x500.jpg'
+      'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&h=500&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=500&h=500&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&h=500&fit=crop&auto=format&q=80'
     ]
   },
   punjabi: {
     artists: ['Sidhu Moose Wala', 'Karan Aujla', 'AP Dhillon', 'Shubh', 'Diljit Dosanjh', 'Gurdas Maan', 'Ammy Virk'],
     genres: ['Punjabi Pop', 'Punjabi Hip Hop', 'Bhangra', 'Punjabi Folk', 'Punjabi Trap', 'Punjabi Romance'],
     thumbnails: [
-      'https://c.saavncdn.com/017/Cheques-Punjabi-2022-20220722011950-500x500.jpg',
-      'https://c.saavncdn.com/491/No-Name-Punjabi-2021-20210616121917-500x500.jpg',
-      'https://c.saavncdn.com/378/Two-Hearts-Never-Die-Punjabi-2021-20210616121916-500x500.jpg'
+      'https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=500&h=500&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=500&h=500&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500&h=500&fit=crop&auto=format&q=80'
     ]
   }
 };
