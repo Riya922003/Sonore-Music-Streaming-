@@ -332,7 +332,7 @@ const uploadSong = async (songPath, language, thumbnailPath) => {
   console.log(`Preparing: ${songName} (Language: ${language})`);
 
   const songData = getSongData(songName, language);
-  const isFeatured = Math.random() < 0.25; // 25% chance to be featured
+  const isFeatured = Math.random() < 0.25;
 
   try {
     const form = new FormData();
@@ -341,32 +341,25 @@ const uploadSong = async (songPath, language, thumbnailPath) => {
     form.append('song', fs.createReadStream(songPath));
     form.append('thumbnail', fs.createReadStream(thumbnailPath));
     
-    // Append all other fields as strings
+    // --- FIX: APPEND ALL REQUIRED TEXT FIELDS ---
     form.append('title', songName.replace(/-/g, ' ').replace(/_/g, ' ')); 
     form.append('artist', songData.artist);
     form.append('duration', songData.duration.toString());
-    form.append('language', language);
-    form.append('genre', songData.genre);
-    form.append('featured', isFeatured.toString()); // Convert boolean to string
+    form.append('language', language); // Now sending language
+    form.append('genre', songData.genre);   // Now sending genre
+    form.append('featured', isFeatured.toString());
 
     console.log(`  - Artist: ${songData.artist}`);
-    console.log(`  - Duration: ${songData.duration}s`);
     console.log(`  - Genre: ${songData.genre}`);
     console.log(`  - Language: ${language}`);
-    console.log(`  - Featured: ${isFeatured ? 'Yes' : 'No'}`);
-
-    // Debug: Log the data being sent (without iterating form.entries)
-    console.log('  - Sending FormData with fields: title, artist, duration, language, genre, featured, song, thumbnail');
-
+    
+    // This will send the request to your LOCAL server (from Step 1)
     const response = await axios.post(API_URL, form, {
       headers: { 
         ...form.getHeaders(), 
         'x-auth-token': AUTH_TOKEN,
-        'Accept': 'application/json'
       },
-      timeout: 90000, // 90 second timeout
-      maxContentLength: Infinity,
-      maxBodyLength: Infinity
+      timeout: 90000,
     });
     
     console.log(`  ✅ Success: Uploaded ${songName}\n`);
@@ -375,12 +368,9 @@ const uploadSong = async (songPath, language, thumbnailPath) => {
     if (error.response) {
       console.error(`    Status: ${error.response.status}`);
       console.error(`    Data:`, error.response.data);
-    } else if (error.request) {
-      console.error(`    Network Error: ${error.message}`);
     } else {
       console.error(`    Error: ${error.message}`);
     }
-    console.log('');
   }
 };
 
