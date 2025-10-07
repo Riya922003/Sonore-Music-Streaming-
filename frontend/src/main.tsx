@@ -6,6 +6,7 @@ import { PlayerProvider } from './contexts/PlayerContext'
 import { SearchProvider } from './contexts/SearchContext'
 import { PlaylistProvider } from './contexts/PlaylistContext'
 import { UIProvider } from './contexts/UIContext'
+import { FocusTimerProvider } from './contexts/FocusTimerContext'
 import './index.css'
 import App from './App.tsx'
 
@@ -19,7 +20,9 @@ createRoot(document.getElementById('root')!).render(
           <PlaylistProvider>
             <UIProvider>
               <SearchProvider>
-                <App />
+                <FocusTimerProvider>
+                  <App />
+                </FocusTimerProvider>
               </SearchProvider>
             </UIProvider>
           </PlaylistProvider>

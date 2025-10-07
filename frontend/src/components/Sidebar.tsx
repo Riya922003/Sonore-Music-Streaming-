@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { usePlayer } from '../contexts/PlayerContext';
 import { useUI } from '../contexts/UIContext';
 import { useSearch } from '../contexts/SearchContext';
+import { useFocusTimer } from '../contexts/FocusTimerContext';
 import FocusQueueModal from './FocusQueueModal';
 
 interface SidebarProps {
@@ -35,6 +36,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const { currentSong } = usePlayer(); // Check if a song is currently playing
   const { openLibraryModal } = useUI();
   const { openSearch } = useSearch();
+  const { isTimerActive } = useFocusTimer();
   
   // Focus Queue Modal state
   const [isFocusModalOpen, setIsFocusModalOpen] = useState(false);
@@ -50,7 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
 
   const libraryItems: NavigationItem[] = [
     { icon: Plus, label: 'Create Playlist' },
-    { icon: Clock, label: 'Focus Queue', onClick: openFocusModal },
+    { icon: Clock, label: 'Focus Queue', onClick: openFocusModal, active: isTimerActive },
     { icon: Heart, label: 'Liked Songs' },
     { icon: Download, label: 'Downloads' },
   ];
@@ -117,12 +119,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
             {libraryItems.map((item) => (
               <li key={item.label}>
                 <div 
-                  className={`sidebar-item group ${isCollapsed ? 'collapsed justify-center' : ''} ${item.onClick ? 'cursor-pointer' : ''}`}
+                  className={`sidebar-item group ${item.active ? 'active' : ''} ${isCollapsed ? 'collapsed justify-center' : ''} ${item.onClick ? 'cursor-pointer' : ''}`}
                   title={isCollapsed ? item.label : ''}
                   onClick={item.onClick}
                 >
                   <item.icon size={20} className="flex-shrink-0" />
                   <span className={`truncate ${isCollapsed ? 'hidden' : ''}`}>{item.label}</span>
+                  {item.active && !isCollapsed && (
+                    <div className="w-2 h-2 bg-green-500 rounded-full ml-auto flex-shrink-0"></div>
+                  )}
                 </div>
               </li>
             ))}

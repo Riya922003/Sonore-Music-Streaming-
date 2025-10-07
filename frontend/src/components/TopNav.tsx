@@ -1,11 +1,13 @@
-import { Search, Bell, Settings } from 'lucide-react';
+import { Search, Bell, Settings, Clock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useSearch } from '../contexts/SearchContext';
+import { useFocusTimer } from '../contexts/FocusTimerContext';
 import StarBorder from './StarBorder';
 
 const TopNav: React.FC = () => {
   const { user, openAuthModal } = useAuth();
   const { openSearch } = useSearch();
+  const { isTimerActive, timeRemaining, formatTime } = useFocusTimer();
 
   const getUserInitial = (name: string | undefined) => {
     if (!name || name.length === 0) {
@@ -38,6 +40,14 @@ const TopNav: React.FC = () => {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2 sm:gap-3 flex-1 justify-end">
+          {/* Focus Timer Display */}
+          {isTimerActive && (
+            <div className="flex items-center gap-2 bg-green-900/30 border border-green-700/50 px-3 py-2 rounded-lg text-green-400 text-sm font-medium flex-shrink-0">
+              <Clock size={16} />
+              <span>{formatTime(timeRemaining)}</span>
+            </div>
+          )}
+          
           <button className="text-gray-400 hover:text-white transition-colors duration-200 p-2 rounded-lg hover:bg-gray-800 flex-shrink-0">
             <Bell size={18} className="sm:w-5 sm:h-5" />
           </button>
