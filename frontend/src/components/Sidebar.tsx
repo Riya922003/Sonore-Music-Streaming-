@@ -10,11 +10,14 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Clock,
   LucideIcon
 } from 'lucide-react';
+import { useState } from 'react';
 import { usePlayer } from '../contexts/PlayerContext';
 import { useUI } from '../contexts/UIContext';
 import { useSearch } from '../contexts/SearchContext';
+import FocusQueueModal from './FocusQueueModal';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -33,6 +36,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const { openLibraryModal } = useUI();
   const { openSearch } = useSearch();
   
+  // Focus Queue Modal state
+  const [isFocusModalOpen, setIsFocusModalOpen] = useState(false);
+  
+  const openFocusModal = () => setIsFocusModalOpen(true);
+  const closeFocusModal = () => setIsFocusModalOpen(false);
+  
   const navigationItems: NavigationItem[] = [
     { icon: Home, label: 'Home', active: true },
     { icon: Search, label: 'Search', onClick: openSearch },
@@ -41,6 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
 
   const libraryItems: NavigationItem[] = [
     { icon: Plus, label: 'Create Playlist' },
+    { icon: Clock, label: 'Focus Queue', onClick: openFocusModal },
     { icon: Heart, label: 'Liked Songs' },
     { icon: Download, label: 'Downloads' },
   ];
@@ -107,8 +117,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
             {libraryItems.map((item) => (
               <li key={item.label}>
                 <div 
-                  className={`sidebar-item group ${isCollapsed ? 'collapsed justify-center' : ''}`}
+                  className={`sidebar-item group ${isCollapsed ? 'collapsed justify-center' : ''} ${item.onClick ? 'cursor-pointer' : ''}`}
                   title={isCollapsed ? item.label : ''}
+                  onClick={item.onClick}
                 >
                   <item.icon size={20} className="flex-shrink-0" />
                   <span className={`truncate ${isCollapsed ? 'hidden' : ''}`}>{item.label}</span>
@@ -140,6 +151,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
           ))}
         </ul>
       </div>
+      
+      {/* Focus Queue Modal */}
+      <FocusQueueModal 
+        isOpen={isFocusModalOpen} 
+        onClose={closeFocusModal} 
+      />
     </div>
   );
 };

@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useUI } from '../contexts/UIContext';
+import { useAuth } from '../contexts/AuthContext';
 import { Playlist } from '../contexts/PlaylistContext';
 import apiClient from '../api';
 
 const LibraryModal: React.FC = () => {
   const { isLibraryModalOpen, closeLibraryModal } = useUI();
+  const { user, openAuthModal } = useAuth();
   const [query, setQuery] = useState<string>('');
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [filteredPlaylists, setFilteredPlaylists] = useState<Playlist[]>([]);
@@ -51,7 +53,7 @@ const LibraryModal: React.FC = () => {
       setPlaylists(response.data);
     } catch (error) {
       console.error('🚨 Fetch playlists error:', error);
-      setError('Failed to load playlists. Please try again.');
+      setError('Unable to load your library right now.');
       setPlaylists([]);
     } finally {
       setIsLoading(false);
@@ -103,6 +105,53 @@ const LibraryModal: React.FC = () => {
     return null;
   }
 
+  // Show login prompt if user is not authenticated
+  if (!user) {
+    return (
+      <div
+        className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4"
+        onClick={handleOverlayClick}
+      >
+        <div className="bg-gray-900 border border-gray-800 rounded-lg shadow-xl w-full max-w-md flex flex-col">
+          {/* Header */}
+          <div className="p-6 border-b border-gray-700">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-semibold text-white">Your Library</h2>
+              <button
+                onClick={closeLibraryModal}
+                className="text-gray-400 hover:text-gray-200 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Login Prompt */}
+          <div className="p-6 text-center">
+            <svg className="mx-auto mb-4 text-gray-400" width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            <h3 className="text-xl font-medium text-white mb-2">Login Required</h3>
+            <p className="text-gray-300 mb-6">
+              Please log in to view and manage your personal music library.
+            </p>
+            <button
+              onClick={() => {
+                closeLibraryModal();
+                openAuthModal();
+              }}
+              className="w-full bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700 transition-colors font-medium"
+            >
+              Log In to Access Library
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4"
@@ -152,14 +201,14 @@ const LibraryModal: React.FC = () => {
 
           {error && (
             <div className="text-center py-8">
-              <svg className="mx-auto h-12 w-12 text-red-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="mx-auto h-12 w-12 text-yellow-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <p className="text-red-300 text-lg">Error loading playlists</p>
-              <p className="text-gray-400 text-sm mt-1">{error}</p>
+              <p className="text-yellow-300 text-lg">Unable to load playlists</p>
+              <p className="text-gray-400 text-sm mt-1">Please check your connection and try again</p>
               <button
                 onClick={fetchPlaylists}
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
               >
                 Try Again
               </button>

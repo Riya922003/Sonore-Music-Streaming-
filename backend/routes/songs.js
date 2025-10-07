@@ -141,6 +141,72 @@ router.get('/featured', async (req, res) => {
   }
 });
 
+// GET generate queue with specified duration
+router.get('/queue/generate', async (req, res) => {
+  try {
+    // Get duration from query parameters
+    const { duration } = req.query;
+    
+    // Validate duration parameter
+    if (!duration) {
+      return res.status(400).json({
+        success: false,
+        message: "Duration parameter is required."
+      });
+    }
+    
+    const durationMinutes = parseFloat(duration);
+    
+    // Check if duration is a valid number
+    if (isNaN(durationMinutes) || durationMinutes <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Duration must be a valid positive number in minutes."
+      });
+    }
+    
+    // Convert duration from minutes to seconds
+    const requestedDurationSeconds = durationMinutes * 60;
+    
+    // Use MongoDB aggregation pipeline to get a random sample of songs
+    const sampledSongs = await Song.aggregate([
+      { $sample: { size: 50 } }
+    ]);
+    
+    // Build the queue by adding songs until we reach the requested duration
+    const queue = [];
+    let totalDuration = 0;
+    
+    for (const song of sampledSongs) {
+      // Add song to queue
+      queue.push(song);
+      totalDuration += song.duration;
+      
+      // Stop if we've reached or exceeded the requested duration
+      if (totalDuration >= requestedDurationSeconds) {
+        break;
+      }
+    }
+    
+    res.status(200).json({
+      success: true,
+      requestedDurationMinutes: durationMinutes,
+      requestedDurationSeconds: requestedDurationSeconds,
+      actualDurationSeconds: totalDuration,
+      actualDurationMinutes: Math.round((totalDuration / 60) * 100) / 100,
+      count: queue.length,
+      queue: queue
+    });
+    
+  } catch (error) {
+    console.error('Generate queue error:', error);
+    res.status(500).json({
+      success: false,
+      message: "Server error occurred while generating queue."
+    });
+  }
+});
+
 // POST a new song with a thumbnail
 router.post(
   '/upload',

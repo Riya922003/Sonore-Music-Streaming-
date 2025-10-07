@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { X, Search, Plus, Loader2 } from 'lucide-react';
+import { X, Search, Plus, Loader2, LogIn } from 'lucide-react';
 import { useUI } from '../contexts/UIContext';
+import { useAuth } from '../contexts/AuthContext';
 import { Playlist } from '../contexts/PlaylistContext';
 import apiClient from '../api';
 
 const AddToPlaylistModal: React.FC = () => {
   const { isAddToPlaylistModalOpen, songToAdd, closeAddToPlaylistModal } = useUI();
+  const { user, openAuthModal } = useAuth();
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [filteredPlaylists, setFilteredPlaylists] = useState<Playlist[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -76,15 +78,14 @@ const AddToPlaylistModal: React.FC = () => {
       console.error('Error status:', axiosError.response?.status);
       console.error('Error headers:', axiosError.response?.headers);
       
-      let errorMessage = 'Failed to add song to playlist. Please try again.';
+      // Don't show harsh error messages - user is already logged in at this point
+      let errorMessage = 'Unable to add the song right now. Please try again.';
       if (axiosError.response?.data?.message) {
         errorMessage = axiosError.response.data.message;
-      } else if (axiosError.response?.status === 401) {
-        errorMessage = 'Please log in to add songs to playlists.';
       } else if (axiosError.response?.status === 404) {
-        errorMessage = 'Playlist not found. Please try again.';
+        errorMessage = 'Playlist not found. Please refresh and try again.';
       } else if (axiosError.response?.status === 400) {
-        errorMessage = 'Invalid request. Please check the song and playlist.';
+        errorMessage = 'This song might already be in the playlist.';
       }
       
       setError(errorMessage);
@@ -133,6 +134,44 @@ const AddToPlaylistModal: React.FC = () => {
 
   if (!isAddToPlaylistModalOpen || !songToAdd) return null;
 
+  // Show login prompt if user is not authenticated
+  if (!user) {
+    return (
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4">
+        <div className="bg-gray-900 border border-gray-800 rounded-lg shadow-xl max-w-md w-full flex flex-col">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-700">
+            <h2 className="text-lg font-semibold text-white">Add to Playlist</h2>
+            <button
+              onClick={handleClose}
+              className="text-gray-400 hover:text-gray-200 transition-colors"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Login Prompt */}
+          <div className="p-6 text-center">
+            <LogIn className="mx-auto mb-4 text-gray-400" size={48} />
+            <h3 className="text-xl font-medium text-white mb-2">Login Required</h3>
+            <p className="text-gray-300 mb-6">
+              Please log in to add songs to your playlists and create new ones.
+            </p>
+            <button
+              onClick={() => {
+                handleClose();
+                openAuthModal();
+              }}
+              className="w-full bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700 transition-colors font-medium"
+            >
+              Log In to Continue
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4">
       <div className="bg-gray-900 border border-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-96 flex flex-col">
@@ -149,8 +188,8 @@ const AddToPlaylistModal: React.FC = () => {
 
         {/* Error Message */}
         {error && (
-          <div className="mx-4 mt-4 p-3 bg-red-900/30 border border-red-700 rounded-md">
-            <p className="text-sm text-red-400">{error}</p>
+          <div className="mx-4 mt-4 p-3 bg-yellow-900/20 border border-yellow-700/30 rounded-md">
+            <p className="text-sm text-yellow-300">{error}</p>
           </div>
         )}
 
