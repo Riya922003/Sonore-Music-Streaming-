@@ -62,7 +62,7 @@ const PlaylistPage: React.FC = () => {
 
   // Handle song click
   const handleSongClick = (song: Song) => {
-    if (playlist && playlist.songs) {
+    if (playlist && playlist.songs && Array.isArray(playlist.songs)) {
       playSong(song, playlist.songs);
     }
   };
@@ -92,8 +92,8 @@ const PlaylistPage: React.FC = () => {
     );
   }
 
-  // No playlist found
-  if (!playlist) {
+  // No playlist found or playlist not fully loaded
+  if (!playlist || !playlist._id) {
     return (
       <div className="flex-1 flex items-center justify-center bg-gray-950 text-white">
         <div className="text-center">
@@ -112,10 +112,10 @@ const PlaylistPage: React.FC = () => {
         <div className="flex items-end gap-6">
           {/* Playlist Thumbnail */}
           <div className="w-48 h-48 bg-gray-700 rounded-lg shadow-xl flex items-center justify-center flex-shrink-0">
-            {playlist.songs && playlist.songs.length > 0 && playlist.songs[0].albumArt ? (
+            {playlist.songs && playlist.songs.length > 0 && playlist.songs[0]?.albumArt ? (
               <img 
                 src={playlist.songs[0].albumArt} 
-                alt={playlist.name}
+                alt={playlist.name || 'Playlist'}
                 className="w-full h-full object-cover rounded-lg"
               />
             ) : (
@@ -127,15 +127,15 @@ const PlaylistPage: React.FC = () => {
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-300 mb-2">Playlist</p>
             <h1 className="text-4xl md:text-6xl font-bold mb-4 truncate">
-              {playlist.name}
+              {playlist.name || 'Untitled Playlist'}
             </h1>
             {playlist.description && (
               <p className="text-gray-300 mb-4 text-lg">{playlist.description}</p>
             )}
             <div className="flex items-center gap-2 text-sm text-gray-300">
-              <span className="font-medium">{playlist.createdBy.name}</span>
+              <span className="font-medium">{playlist.createdBy?.name || 'Unknown'}</span>
               <span>•</span>
-              <span>{playlist.songs.length} songs</span>
+              <span>{playlist.songs?.length || 0} songs</span>
             </div>
           </div>
         </div>
@@ -143,7 +143,7 @@ const PlaylistPage: React.FC = () => {
 
       {/* Songs Table */}
       <div className="p-8">
-        {playlist.songs && playlist.songs.length > 0 ? (
+        {playlist.songs && Array.isArray(playlist.songs) && playlist.songs.length > 0 ? (
           <div className="bg-gray-900/50 rounded-lg overflow-hidden">
             {/* Table Header */}
             <div className="grid grid-cols-[50px_1fr_1fr_150px_80px] gap-4 p-4 border-b border-gray-700 text-sm font-medium text-gray-400">

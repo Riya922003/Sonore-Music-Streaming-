@@ -14,7 +14,7 @@ import {
   LucideIcon
 } from 'lucide-react';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { usePlayer } from '../contexts/PlayerContext';
 import { useUI } from '../contexts/UIContext';
 import { useSearch } from '../contexts/SearchContext';
@@ -36,6 +36,7 @@ interface NavigationItem {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
+  const location = useLocation();
   const { currentSong } = usePlayer(); // Check if a song is currently playing
   const { openLibraryModal, openCreatePlaylistModal } = useUI();
   const { openSearch } = useSearch();
@@ -48,10 +49,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const openFocusModal = () => setIsFocusModalOpen(true);
   const closeFocusModal = () => setIsFocusModalOpen(false);
   
+  // Determine which navigation item should be active based on current route
+  const isHomePage = location.pathname === '/';
+  const isLibraryPage = location.pathname.startsWith('/playlist/') || 
+                       location.pathname.startsWith('/library/') ||
+                       location.pathname === '/liked-songs' ||
+                       location.pathname === '/downloads';
+  
   const navigationItems: NavigationItem[] = [
-    { icon: Home, label: 'Home', active: true, to: '/' },
+    { icon: Home, label: 'Home', active: isHomePage, to: '/' },
     { icon: Search, label: 'Search', onClick: openSearch },
-    { icon: Library, label: 'Your Library', onClick: openLibraryModal },
+    { icon: Library, label: 'Your Library', active: isLibraryPage, onClick: openLibraryModal },
   ];
 
   const libraryItems: NavigationItem[] = [
