@@ -1,9 +1,11 @@
 import { Search, Bell, Settings } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useSearch } from '../contexts/SearchContext';
 import StarBorder from './StarBorder';
 
 const TopNav: React.FC = () => {
   const { user, openAuthModal } = useAuth();
+  const { openSearch } = useSearch();
 
   const getUserInitial = (name: string | undefined) => {
     if (!name || name.length === 0) {
@@ -20,13 +22,17 @@ const TopNav: React.FC = () => {
         
         {/* Search Bar - Centered */}
         <div className="flex-2 max-w-sm mx-4 min-w-0">
-          <div className="relative">
+          <div className="relative cursor-pointer" onClick={openSearch}>
             <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 sm:w-5 sm:h-5" />
             <input
               type="text"
               placeholder="What do you want to play?"
-              className="w-full bg-gray-800 text-white placeholder-gray-400 px-8 sm:px-10 py-2 sm:py-3 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-200 text-sm sm:text-base"
+              readOnly
+              className="w-full bg-gray-800 text-white placeholder-gray-400 px-8 sm:px-10 py-2 sm:py-3 rounded-lg border border-gray-700 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent transition-all duration-200 text-sm sm:text-base cursor-pointer"
             />
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-xs hidden sm:block">
+              Ctrl+K
+            </div>
           </div>
         </div>
 

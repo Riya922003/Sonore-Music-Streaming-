@@ -1,18 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar.tsx';
 import TopNav from './components/TopNav.tsx';
 import MainContent from './components/MainContent.tsx';
 import MusicPlayer from './components/MusicPlayer.tsx';
 import AuthModal from './components/AuthModal.tsx';
+import SearchModal from './components/SearchModal.tsx';
 import { useAuth } from './contexts/AuthContext';
+import { useSearch } from './contexts/SearchContext';
 
 function App() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { isAuthModalOpen } = useAuth();
+  const { isSearchOpen, openSearch } = useSearch();
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
   };
+
+  // Listen for Ctrl+K keyboard shortcut
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.key === 'k') {
+        event.preventDefault();
+        openSearch();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [openSearch]);
 
   return (
     <div className="App min-h-screen bg-black p-4 overflow-hidden">
@@ -39,6 +57,9 @@ function App() {
       
       {/* Auth Modal */}
       {isAuthModalOpen && <AuthModal isOpen={isAuthModalOpen} />}
+      
+      {/* Search Modal */}
+      {isSearchOpen && <SearchModal />}
     </div>
   );
 }

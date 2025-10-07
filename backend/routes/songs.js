@@ -56,13 +56,31 @@ router.get('/search', async (req, res) => {
       });
     }
     
-    // Perform text search using the text index
-    const songs = await Song.find({
-      $text: { $search: q }
-    })
-    .limit(10)
-    .populate('uploadedBy', 'name email')
-    .sort({ score: { $meta: 'textScore' } }); // Sort by relevance score
+    // Try text search first, fallback to regex search if text index doesn't exist
+    let songs;
+    try {
+      // Perform text search using the text index
+      songs = await Song.find({
+        $text: { $search: q }
+      })
+      .limit(10)
+      .populate('uploadedBy', 'name email')
+      .sort({ score: { $meta: 'textScore' } }); // Sort by relevance score
+    } catch (textSearchError) {
+      console.log('Text search failed, using regex fallback:', textSearchError.message);
+      // Fallback to regex search if text index doesn't exist
+      songs = await Song.find({
+        $or: [
+          { title: { $regex: q, $options: 'i' } },
+          { artist: { $regex: q, $options: 'i' } },
+          { genre: { $regex: q, $options: 'i' } },
+          { language: { $regex: q, $options: 'i' } }
+        ]
+      })
+      .limit(10)
+      .populate('uploadedBy', 'name email')
+      .sort({ createdAt: -1 });
+    }
     
     res.status(200).json({
       success: true,

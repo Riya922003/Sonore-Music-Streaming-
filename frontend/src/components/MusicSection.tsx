@@ -115,12 +115,13 @@ const MusicSection: React.FC<MusicSectionProps> = ({ title, fetchUrl, items, typ
   useEffect(() => {
     const fetchSongs = async () => {
       try {
+        console.log(`🚀 Starting to fetch songs for "${title}" from: ${fetchUrl}`);
         setIsLoading(true);
         setError(null);
         
         // Use the fetchUrl to get data from the backend
         const response = await apiClient.get(fetchUrl);
-        console.log(`API Response for ${fetchUrl}:`, response.data);
+        console.log(`✅ API Response for ${fetchUrl}:`, response.data);
         
         // Handle different response formats
         const songsData = response.data;
@@ -169,7 +170,12 @@ const MusicSection: React.FC<MusicSectionProps> = ({ title, fetchUrl, items, typ
 
         setSongs(filteredSongs);
       } catch (error) {
-        console.error(`Failed to fetch songs from ${fetchUrl}:`, error);
+        console.error(`❌ Failed to fetch songs for "${title}" from ${fetchUrl}:`, error);
+        console.error('Error details:', error.message);
+        if (error.response) {
+          console.error('Response status:', error.response.status);
+          console.error('Response data:', error.response.data);
+        }
         setError('Failed to load songs');
         setSongs([]);
       } finally {
@@ -178,7 +184,7 @@ const MusicSection: React.FC<MusicSectionProps> = ({ title, fetchUrl, items, typ
     };
 
     fetchSongs();
-  }, [fetchUrl]);
+  }, [fetchUrl, title]);
 
   useEffect(() => {
     // Add a small delay to ensure DOM is ready
