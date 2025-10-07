@@ -5,6 +5,8 @@ import MainContent from './components/MainContent.tsx';
 import MusicPlayer from './components/MusicPlayer.tsx';
 import AuthModal from './components/AuthModal.tsx';
 import SearchModal from './components/SearchModal.tsx';
+import AddToPlaylistModal from './components/AddToPlaylistModal.tsx';
+import LibraryModal from './components/LibraryModal.tsx';
 import { useAuth } from './contexts/AuthContext';
 import { useSearch } from './contexts/SearchContext';
 
@@ -60,6 +62,12 @@ function App() {
       
       {/* Search Modal */}
       {isSearchOpen && <SearchModal />}
+      
+      {/* Library Modal */}
+      <LibraryModal />
+      
+      {/* Add to Playlist Modal */}
+      <AddToPlaylistModal />
     </div>
   );
 }

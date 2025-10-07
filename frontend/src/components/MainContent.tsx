@@ -6,19 +6,19 @@ const MainContent: React.FC = () => {
     <div className="space-y-8"> {/* Increased space between sections for better visuals */}
       <MusicSection 
         title="Featured" 
-        fetchUrl="/songs/featured" 
+        fetchUrl="/api/songs/featured" 
       />
       <MusicSection 
         title="Latest Punjabi" 
-        fetchUrl="/songs?language=Punjabi" 
+        fetchUrl="/api/songs?language=punjabi" 
       />
       <MusicSection 
         title="Top English" 
-        fetchUrl="/songs?language=English" 
+        fetchUrl="/api/songs?language=english" 
       />
       <MusicSection 
         title="Bollywood Hits" 
-        fetchUrl="/songs?genre=Bollywood" 
+        fetchUrl="/api/songs?genre=Bollywood" 
       />
     </div>
   );

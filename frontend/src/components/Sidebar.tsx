@@ -12,6 +12,9 @@ import {
   ChevronRight,
   LucideIcon
 } from 'lucide-react';
+import { usePlayer } from '../contexts/PlayerContext';
+import { useUI } from '../contexts/UIContext';
+import { useSearch } from '../contexts/SearchContext';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -22,13 +25,18 @@ interface NavigationItem {
   icon: LucideIcon;
   label: string;
   active?: boolean;
+  onClick?: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
+  const { currentSong } = usePlayer(); // Check if a song is currently playing
+  const { openLibraryModal } = useUI();
+  const { openSearch } = useSearch();
+  
   const navigationItems: NavigationItem[] = [
     { icon: Home, label: 'Home', active: true },
-    { icon: Search, label: 'Search' },
-    { icon: Library, label: 'Your Library' },
+    { icon: Search, label: 'Search', onClick: openSearch },
+    { icon: Library, label: 'Your Library', onClick: openLibraryModal },
   ];
 
   const libraryItems: NavigationItem[] = [
@@ -43,8 +51,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     { icon: LogOut, label: 'Logout' },
   ];
 
+  // Calculate sidebar height based on whether music player is active
+  const sidebarHeight = currentSong 
+    ? 'h-[calc(100vh-8rem)] md:h-[calc(100vh-8rem)]' // Subtract space for padding (2rem) + music player (~6rem)
+    : 'h-[calc(100vh-2rem)] md:h-[calc(100vh-2rem)]'; // Original height when no music player
+
   return (
-    <div className={`${isCollapsed ? 'w-20' : 'w-64'} bg-gray-900 border-r border-gray-800 h-[calc(100vh-2rem)] rounded-lg overflow-hidden transition-all duration-300 ease-in-out flex flex-col flex-shrink-0 fixed top-4 left-4 z-30`}>
+    <div className={`${isCollapsed ? 'w-20' : 'w-64'} bg-gray-900 border-r border-gray-800 ${sidebarHeight} rounded-lg overflow-hidden transition-all duration-300 ease-in-out flex flex-col flex-shrink-0 fixed top-4 left-4 z-30 sidebar-responsive`}>
       
       {/* Logo and Toggle Button */}
       <div className={`p-4 border-b border-gray-800 flex items-center min-h-[80px] ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
@@ -71,8 +84,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
             {navigationItems.map((item) => (
               <li key={item.label}>
                 <div 
-                  className={`sidebar-item group ${item.active ? 'active' : ''} ${isCollapsed ? 'collapsed justify-center' : ''}`}
+                  className={`sidebar-item group ${item.active ? 'active' : ''} ${isCollapsed ? 'collapsed justify-center' : ''} ${item.onClick ? 'cursor-pointer' : ''}`}
                   title={isCollapsed ? item.label : ''}
+                  onClick={item.onClick}
                 >
                   <item.icon size={20} className="flex-shrink-0" />
                   <span className={`truncate ${isCollapsed ? 'hidden' : ''}`}>{item.label}</span>

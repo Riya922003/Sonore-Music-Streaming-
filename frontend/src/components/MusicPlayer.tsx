@@ -1,10 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Repeat } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Repeat, Plus } from 'lucide-react';
 import { usePlayer } from '../contexts/PlayerContext';
+import { useUI } from '../contexts/UIContext';
 import ElasticSlider from './ElasticSlider';
 
 const MusicPlayer: React.FC = () => {
   const { currentSong, isPlaying, togglePlayPause, playNext, playPrevious } = usePlayer();
+  const { openAddToPlaylistModal } = useUI();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
@@ -167,6 +169,13 @@ const MusicPlayer: React.FC = () => {
     }
   };
 
+  // Handle add to playlist
+  const handleAddToPlaylist = () => {
+    if (currentSong) {
+      openAddToPlaylistModal(currentSong);
+    }
+  };
+
   // Don't render if no current song
   if (!currentSong) {
     return null;
@@ -219,6 +228,13 @@ const MusicPlayer: React.FC = () => {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <h4 className="text-sm font-bold text-white truncate">{currentSong.title}</h4>
+                <button
+                  onClick={handleAddToPlaylist}
+                  className="text-gray-400 hover:text-white transition-colors p-1 rounded hover:bg-gray-700"
+                  title="Add to playlist"
+                >
+                  <Plus size={14} />
+                </button>
                 {usingFallback && (
                   <span className="text-xs bg-yellow-600 text-yellow-100 px-1 rounded">DEMO</span>
                 )}

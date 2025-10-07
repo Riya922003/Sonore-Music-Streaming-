@@ -4,6 +4,8 @@ import { GoogleOAuthProvider } from '@react-oauth/google'
 import { AuthProvider } from './contexts/AuthContext'
 import { PlayerProvider } from './contexts/PlayerContext'
 import { SearchProvider } from './contexts/SearchContext'
+import { PlaylistProvider } from './contexts/PlaylistContext'
+import { UIProvider } from './contexts/UIContext'
 import './index.css'
 import App from './App.tsx'
 
@@ -14,9 +16,13 @@ createRoot(document.getElementById('root')!).render(
     <GoogleOAuthProvider clientId={googleClientId}>
       <AuthProvider>
         <PlayerProvider>
-          <SearchProvider>
-            <App />
-          </SearchProvider>
+          <PlaylistProvider>
+            <UIProvider>
+              <SearchProvider>
+                <App />
+              </SearchProvider>
+            </UIProvider>
+          </PlaylistProvider>
         </PlayerProvider>
       </AuthProvider>
     </GoogleOAuthProvider>

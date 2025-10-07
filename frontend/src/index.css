@@ -251,4 +251,47 @@
     overflow-y: hidden;
     contain: layout;
   }
+
+  /* Smooth sidebar height transitions when music player appears/disappears */
+  .sidebar-responsive {
+    transition: height 0.3s ease-in-out;
+  }
+
+  /* Ensure sidebar content is properly scrollable */
+  .sidebar-content {
+    min-height: 0;
+    flex: 1;
+    overflow-y: auto;
+  }
+}
+
+/* Mobile responsiveness for sidebar */
+@media (max-width: 768px) {
+  .sidebar-responsive {
+    width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    max-width: none !important;
+    position: fixed;
+    top: 1rem;
+    margin: 0 1rem;
+    z-index: 40;
+  }
+  
+  .sidebar-responsive.collapsed {
+    width: 4rem !important;
+    margin: 0;
+    left: 1rem !important;
+  }
+}
+
+/* Tablet responsiveness */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .sidebar-responsive {
+    width: 12rem !important;
+  }
+  
+  .sidebar-responsive.collapsed {
+    width: 4rem !important;
+  }
 }
