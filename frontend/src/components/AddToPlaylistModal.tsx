@@ -54,14 +54,40 @@ const AddToPlaylistModal: React.FC = () => {
     if (!songToAdd) return;
     
     try {
-      await apiClient.post(`/api/playlists/${playlistId}/songs`, {
+      console.log('🎵 Adding song to playlist:', {
+        playlistId,
+        songId: songToAdd._id,
+        songTitle: songToAdd.title,
+        endpoint: `/api/playlists/${playlistId}/songs`,
+        authToken: localStorage.getItem('authToken') ? 'Present' : 'Missing'
+      });
+      
+      const response = await apiClient.post(`/api/playlists/${playlistId}/songs`, {
         songId: songToAdd._id
       });
+      
+      console.log('✅ Successfully added song to playlist:', response.data);
       closeAddToPlaylistModal();
       // You could add a toast notification here
     } catch (error) {
-      console.error('Error adding song to playlist:', error);
-      setError('Failed to add song to playlist. Please try again.');
+      console.error('❌ Error adding song to playlist:', error);
+      const axiosError = error as { response?: { data?: { message?: string }, status?: number, headers?: unknown } };
+      console.error('Error response:', axiosError.response?.data);
+      console.error('Error status:', axiosError.response?.status);
+      console.error('Error headers:', axiosError.response?.headers);
+      
+      let errorMessage = 'Failed to add song to playlist. Please try again.';
+      if (axiosError.response?.data?.message) {
+        errorMessage = axiosError.response.data.message;
+      } else if (axiosError.response?.status === 401) {
+        errorMessage = 'Please log in to add songs to playlists.';
+      } else if (axiosError.response?.status === 404) {
+        errorMessage = 'Playlist not found. Please try again.';
+      } else if (axiosError.response?.status === 400) {
+        errorMessage = 'Invalid request. Please check the song and playlist.';
+      }
+      
+      setError(errorMessage);
     }
   };
 
