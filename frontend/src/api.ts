@@ -5,11 +5,11 @@ import axios from 'axios';
 const isDevelopment = window.location.hostname === 'localhost';
 const BACKEND_BASE_URL = isDevelopment 
   ? 'http://localhost:5000'  // Local development
-  : 'https://backend-deployment-u389.onrender.com';  // Production
+  : 'https://backend-deployment-u389.onrender.com/';  // Production
 
 // OPTION 2: Manual override (uncomment to force a specific environment)
 // const BACKEND_BASE_URL = 'http://localhost:5000';  // Force local
-// const BACKEND_BASE_URL = 'https://backend-deployment-u389.onrender.com';  // Force production
+// const BACKEND_BASE_URL = 'https://backend-deploy';  // Force production
 
 const apiClient = axios.create({
   baseURL: BACKEND_BASE_URL,
