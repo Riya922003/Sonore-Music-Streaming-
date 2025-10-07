@@ -5,43 +5,10 @@ const FormData = require('form-data');
 
 // --- CONFIGURATION ---
 const API_URL = 'http://localhost:5000/api/songs/upload'; 
-const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZTI3ZTAyNDJiYzY1ZjMyZjgxZWZjMSIsIm5hbWUiOiJSaXlhMSIsImVtYWlsIjoicml5YTFAZ21haWwuY29tIiwiaWF0IjoxNzU5NzczMDA5LCJleHAiOjE3NTk3OTEwMDl9.XX4SgaaJYn3Hu6px2TXZ8H0BaEDAMuLeME7w8W2jSbQ'; 
+const AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4ZTI3ZTAyNDJiYzY1ZjMyZjgxZWZjMSIsIm5hbWUiOiJSaXlhMSIsImVtYWlsIjoicml5YTFAZ21haWwuY29tIiwiaWF0IjoxNzU5ODI1MjU2LCJleHAiOjE3NTk4NDMyNTZ9.w_T9w-k6vC8dQA7zsDfgt0x-KwK2_-hx-sqgGqpbfOw'; 
 const SONGS_BASE_DIRECTORY = path.join(__dirname, '..', 'songs-to-upload');
 const TEMP_THUMBNAIL_PATH = path.join(__dirname, 'temp_thumbnail.jpg');
 // --- END CONFIGURATION ---
-
-// Download a default thumbnail image to use for all uploads
-const downloadDefaultThumbnail = async () => {
-  if (fs.existsSync(TEMP_THUMBNAIL_PATH)) {
-    console.log('🖼️  Using existing temporary thumbnail');
-    return TEMP_THUMBNAIL_PATH;
-  }
-
-  console.log('📥 Downloading default thumbnail...');
-  try {
-    const response = await axios({
-      method: 'GET',
-      url: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop',
-      responseType: 'stream'
-    });
-
-    const writer = fs.createWriteStream(TEMP_THUMBNAIL_PATH);
-    response.data.pipe(writer);
-
-    return new Promise((resolve, reject) => {
-      writer.on('finish', () => {
-        console.log('✅ Default thumbnail downloaded successfully');
-        resolve(TEMP_THUMBNAIL_PATH);
-      });
-      writer.on('error', reject);
-    });
-  } catch (error) {
-    console.error('❌ Failed to download thumbnail:', error.message);
-    throw error;
-  }
-};
-
-// Song metadata database with specific data for each song
 
 const songMetadata = {
   // English songs
@@ -310,6 +277,8 @@ const fallbackData = {
   }
 };
 
+// // ... (Your fallbackData and getSongData functions remain the same) ...
+// const fallbackData = { /* ... */ };
 const getSongData = (songName, language) => {
   const cleanName = songName.replace(/\.[^/.]+$/, ''); // Remove extension
   
@@ -318,7 +287,7 @@ const getSongData = (songName, language) => {
   }
   
   // Fallback to random data
-  const fallback = fallbackData[language] || fallbackData.english;
+  const fallback = fallbackData[language.toLowerCase()] || fallbackData.english;
   return {
     artist: fallback.artists[Math.floor(Math.random() * fallback.artists.length)],
     duration: Math.floor(Math.random() * 120) + 120, // 120-240 seconds
@@ -327,112 +296,105 @@ const getSongData = (songName, language) => {
   };
 };
 
-const uploadSong = async (songPath, language, thumbnailPath) => {
+
+// NEW: Function to download a specific image URL to a temporary file
+const downloadImage = async (url) => {
+  try {
+    const response = await axios({ method: 'GET', url, responseType: 'stream' });
+    const writer = fs.createWriteStream(TEMP_THUMBNAIL_PATH);
+    response.data.pipe(writer);
+    return new Promise((resolve, reject) => {
+      writer.on('finish', () => resolve(TEMP_THUMBNAIL_PATH));
+      writer.on('error', reject);
+    });
+  } catch (error) {
+    console.error(`❌ Failed to download thumbnail from ${url}:`, error.message);
+    throw error;
+  }
+};
+
+
+const uploadSong = async (songPath, language) => {
   const songName = path.basename(songPath, path.extname(songPath));
   console.log(`Preparing: ${songName} (Language: ${language})`);
 
   const songData = getSongData(songName, language);
   const isFeatured = Math.random() < 0.25;
 
+  let tempThumbnailPath;
   try {
+    // Step 1: Download the SPECIFIC thumbnail for this song
+    console.log(`  - Downloading thumbnail: ${songData.thumbnail}`);
+    tempThumbnailPath = await downloadImage(songData.thumbnail);
+
+    // Step 2: Prepare the form with the downloaded thumbnail
     const form = new FormData();
-    
-    // Append files
     form.append('song', fs.createReadStream(songPath));
-    form.append('thumbnail', fs.createReadStream(thumbnailPath));
+    form.append('thumbnail', fs.createReadStream(tempThumbnailPath)); // Use the just-downloaded file
     
-    // --- FIX: APPEND ALL REQUIRED TEXT FIELDS ---
+    // Append all other fields
     form.append('title', songName.replace(/-/g, ' ').replace(/_/g, ' ')); 
     form.append('artist', songData.artist);
     form.append('duration', songData.duration.toString());
-    form.append('language', language); // Now sending language
-    form.append('genre', songData.genre);   // Now sending genre
+    form.append('language', language);
+    form.append('genre', songData.genre);
     form.append('featured', isFeatured.toString());
 
-    console.log(`  - Artist: ${songData.artist}`);
-    console.log(`  - Genre: ${songData.genre}`);
-    console.log(`  - Language: ${language}`);
-    
-    // This will send the request to your LOCAL server (from Step 1)
-    const response = await axios.post(API_URL, form, {
-      headers: { 
-        ...form.getHeaders(), 
-        'x-auth-token': AUTH_TOKEN,
-      },
+    // Step 3: Upload to your API
+    await axios.post(API_URL, form, {
+      headers: { ...form.getHeaders(), 'x-auth-token': AUTH_TOKEN },
       timeout: 90000,
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity
     });
     
     console.log(`  ✅ Success: Uploaded ${songName}\n`);
+
   } catch (error) {
     console.error(`  ❌ Critical Error for ${songName}:`);
     if (error.response) {
-      console.error(`    Status: ${error.response.status}`);
-      console.error(`    Data:`, error.response.data);
+      console.error(`    Status: ${error.response.status}, Data:`, error.response.data);
     } else {
       console.error(`    Error: ${error.message}`);
+    }
+  } finally {
+    // Step 4: Clean up the temporary thumbnail file for this song
+    if (fs.existsSync(TEMP_THUMBNAIL_PATH)) {
+      fs.unlinkSync(TEMP_THUMBNAIL_PATH);
     }
   }
 };
 
+
 const run = async () => {
   console.log('🎵 Starting API-based bulk upload from subfolders...\n');
-  
-  // Check if songs directory exists
   if (!fs.existsSync(SONGS_BASE_DIRECTORY)) {
     return console.error(`❌ Error: Directory not found at ${SONGS_BASE_DIRECTORY}`);
   }
 
-  // Download default thumbnail first
-  let thumbnailPath;
-  try {
-    thumbnailPath = await downloadDefaultThumbnail();
-  } catch (error) {
-    console.error('❌ Failed to prepare thumbnail. Exiting...');
-    return;
-  }
-
   const languageFolders = fs.readdirSync(SONGS_BASE_DIRECTORY, { withFileTypes: true })
-    .filter(dirent => dirent.isDirectory())
-    .map(dirent => dirent.name);
-
-  if (languageFolders.length === 0) {
-    console.log('⚠️  No language subfolders found in songs-to-upload.');
-    return;
-  }
-
-  console.log(`📁 Found ${languageFolders.length} language folders: ${languageFolders.join(', ')}\n`);
+    .filter(dirent => dirent.isDirectory()).map(dirent => dirent.name);
 
   for (const language of languageFolders) {
     console.log(`🔄 Processing folder: ${language.toUpperCase()}...`);
     const languagePath = path.join(SONGS_BASE_DIRECTORY, language);
-    const files = fs.readdirSync(languagePath);
-    const songFiles = files.filter(file => file.endsWith('.mp3') || file.endsWith('.wav') || file.endsWith('.m4a'));
+    const songFiles = fs.readdirSync(languagePath).filter(file => file.endsWith('.mp3') || file.endsWith('.wav'));
 
     if (songFiles.length === 0) {
       console.log(`⚠️  No songs found in ${language} folder.\n`);
       continue;
     }
 
-    console.log(`📊 Found ${songFiles.length} songs in ${language} folder\n`);
-
     for (let i = 0; i < songFiles.length; i++) {
       const songFile = songFiles[i];
       console.log(`[${i + 1}/${songFiles.length}]`);
-      await uploadSong(path.join(languagePath, songFile), language, thumbnailPath);
-      
-      // Add a small delay to avoid overwhelming the server
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // No longer need to pass thumbnailPath here
+      await uploadSong(path.join(languagePath, songFile), language);
+      await new Promise(resolve => setTimeout(resolve, 500)); // Small delay
     }
   }
   
-  // Clean up temporary thumbnail
-  if (fs.existsSync(TEMP_THUMBNAIL_PATH)) {
-    fs.unlinkSync(TEMP_THUMBNAIL_PATH);
-    console.log('🧹 Cleaned up temporary thumbnail file');
-  }
-  
   console.log('🎉 Bulk upload finished!');
-  console.log('📈 Summary: Check your database for all uploaded songs with proper metadata.');
 };
 
 run().catch(console.error);
