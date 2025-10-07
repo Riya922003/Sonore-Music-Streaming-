@@ -48,6 +48,14 @@ const songSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Create text index for search functionality
+songSchema.index({
+  title: 'text',
+  artist: 'text',
+  genre: 'text',
+  language: 'text'
+});
+
 const Song = mongoose.model('Song', songSchema);
 
 module.exports = Song;

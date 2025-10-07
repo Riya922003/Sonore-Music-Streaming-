@@ -41,6 +41,44 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET search songs by text
+router.get('/search', async (req, res) => {
+  try {
+    // Get search term from query parameters
+    const { q } = req.query;
+    
+    // If no search term provided, return empty array
+    if (!q || q.trim() === '') {
+      return res.status(200).json({
+        success: true,
+        count: 0,
+        songs: []
+      });
+    }
+    
+    // Perform text search using the text index
+    const songs = await Song.find({
+      $text: { $search: q }
+    })
+    .limit(10)
+    .populate('uploadedBy', 'name email')
+    .sort({ score: { $meta: 'textScore' } }); // Sort by relevance score
+    
+    res.status(200).json({
+      success: true,
+      count: songs.length,
+      songs: songs,
+      searchTerm: q
+    });
+  } catch (error) {
+    console.error('Search songs error:', error);
+    res.status(500).json({
+      success: false,
+      message: "Server error occurred while searching songs."
+    });
+  }
+});
+
 // Test route to check Cloudinary configuration
 router.get('/test-config', (req, res) => {
   try {
