@@ -81,9 +81,10 @@ const SearchModal: React.FC = () => {
         }
       } catch (error) {
         console.error('🚨 Search error:', error);
-        if (error.response) {
-          console.error('Response status:', error.response.status);
-          console.error('Response data:', error.response.data);
+        if (error && typeof error === 'object' && 'response' in error) {
+          const axiosError = error as { response: { status: number; data: unknown } };
+          console.error('Response status:', axiosError.response.status);
+          console.error('Response data:', axiosError.response.data);
         }
         setResults([]);
       } finally {

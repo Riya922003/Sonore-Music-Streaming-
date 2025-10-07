@@ -171,10 +171,13 @@ const MusicSection: React.FC<MusicSectionProps> = ({ title, fetchUrl, items, typ
         setSongs(filteredSongs);
       } catch (error) {
         console.error(`❌ Failed to fetch songs for "${title}" from ${fetchUrl}:`, error);
-        console.error('Error details:', error.message);
-        if (error.response) {
-          console.error('Response status:', error.response.status);
-          console.error('Response data:', error.response.data);
+        if (error instanceof Error) {
+          console.error('Error details:', error.message);
+        }
+        if (error && typeof error === 'object' && 'response' in error) {
+          const axiosError = error as { response: { status: number; data: unknown } };
+          console.error('Response status:', axiosError.response.status);
+          console.error('Response data:', axiosError.response.data);
         }
         setError('Failed to load songs');
         setSongs([]);
