@@ -9,6 +9,9 @@ interface UIContextType {
   openAddToPlaylistModal: (song: Song) => void;
   closeAddToPlaylistModal: () => void;
   
+  // Create Playlist Modal state
+  openCreatePlaylistModal: () => void;
+  
   // Library Modal state
   isLibraryModalOpen: boolean;
   openLibraryModal: () => void;
@@ -39,6 +42,11 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     setSongToAdd(null);
   };
 
+  const openCreatePlaylistModal = () => {
+    setSongToAdd(null); // No song to add, just creating a playlist
+    setIsAddToPlaylistModalOpen(true);
+  };
+
   const openLibraryModal = () => {
     setIsLibraryModalOpen(true);
   };
@@ -52,6 +60,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     isAddToPlaylistModalOpen,
     openAddToPlaylistModal,
     closeAddToPlaylistModal,
+    openCreatePlaylistModal,
     isLibraryModalOpen,
     openLibraryModal,
     closeLibraryModal,

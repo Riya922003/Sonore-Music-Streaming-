@@ -18,6 +18,7 @@ import { usePlayer } from '../contexts/PlayerContext';
 import { useUI } from '../contexts/UIContext';
 import { useSearch } from '../contexts/SearchContext';
 import { useFocusTimer } from '../contexts/FocusTimerContext';
+import { useAuth } from '../contexts/AuthContext';
 import FocusQueueModal from './FocusQueueModal';
 
 interface SidebarProps {
@@ -34,9 +35,10 @@ interface NavigationItem {
 
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const { currentSong } = usePlayer(); // Check if a song is currently playing
-  const { openLibraryModal } = useUI();
+  const { openLibraryModal, openCreatePlaylistModal } = useUI();
   const { openSearch } = useSearch();
   const { isTimerActive } = useFocusTimer();
+  const { user, logout } = useAuth();
   
   // Focus Queue Modal state
   const [isFocusModalOpen, setIsFocusModalOpen] = useState(false);
@@ -51,16 +53,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   ];
 
   const libraryItems: NavigationItem[] = [
-    { icon: Plus, label: 'Create Playlist' },
+    { icon: Plus, label: 'Create Playlist', onClick: openCreatePlaylistModal },
     { icon: Clock, label: 'Focus Queue', onClick: openFocusModal, active: isTimerActive },
     { icon: Heart, label: 'Liked Songs' },
     { icon: Download, label: 'Downloads' },
   ];
 
-  const userItems: NavigationItem[] = [
+  const userItems: NavigationItem[] = user ? [
     { icon: User, label: 'Profile' },
     { icon: Settings, label: 'Settings' },
-    { icon: LogOut, label: 'Logout' },
+    { icon: LogOut, label: 'Logout', onClick: logout },
+  ] : [
+    { icon: User, label: 'Profile' },
+    { icon: Settings, label: 'Settings' },
   ];
 
   // Calculate sidebar height based on whether music player is active
@@ -146,8 +151,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
           {userItems.map((item) => (
             <li key={item.label}>
               <div 
-                className={`sidebar-item group ${isCollapsed ? 'collapsed justify-center' : ''}`}
+                className={`sidebar-item group ${isCollapsed ? 'collapsed justify-center' : ''} ${item.onClick ? 'cursor-pointer' : ''}`}
                 title={isCollapsed ? item.label : ''}
+                onClick={item.onClick}
               >
                 <item.icon size={20} className="flex-shrink-0" />
                 <span className={`truncate ${isCollapsed ? 'hidden' : ''}`}>{item.label}</span>

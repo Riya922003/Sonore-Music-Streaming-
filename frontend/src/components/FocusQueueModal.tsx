@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Loader2, Clock } from 'lucide-react';
 import { usePlayer } from '../contexts/PlayerContext';
 import { useFocusTimer } from '../contexts/FocusTimerContext';
+import StarBorder from './StarBorder';
 import apiClient from '../api';
 
 interface FocusQueueModalProps {
@@ -161,12 +162,16 @@ const FocusQueueModal: React.FC<FocusQueueModalProps> = ({ isOpen, onClose }) =>
             </div>
 
             {/* Cancel Button */}
-            <button
+            <StarBorder
+              as="button"
               onClick={handleCancelTimer}
-              className="w-full px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+              className="w-full"
+              color="#f97316"
+              speed="4s"
+              thickness={2}
             >
               End Focus Session
-            </button>
+            </StarBorder>
           </div>
         ) : (
           /* New Session Form */

@@ -19,7 +19,7 @@ export const FocusTimerProvider: React.FC<FocusTimerProviderProps> = ({ children
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [totalDuration, setTotalDuration] = useState(0);
-  const [intervalId, setIntervalId] = useState<NodeJS.Timeout | null>(null);
+  const [intervalId, setIntervalId] = useState<number | null>(null);
 
   const startTimer = (durationMinutes: number) => {
     const durationSeconds = durationMinutes * 60;
@@ -61,7 +61,7 @@ export const FocusTimerProvider: React.FC<FocusTimerProviderProps> = ({ children
           }
           return prev - 1;
         });
-      }, 1000);
+      }, 1000) as unknown as number;
       
       setIntervalId(id);
       

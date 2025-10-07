@@ -94,7 +94,7 @@ const AddToPlaylistModal: React.FC = () => {
 
   const handleCreatePlaylist = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPlaylistName.trim() || !songToAdd) return;
+    if (!newPlaylistName.trim()) return;
 
     setIsCreatingPlaylist(true);
     setError('');
@@ -107,10 +107,12 @@ const AddToPlaylistModal: React.FC = () => {
 
       const newPlaylist = playlistResponse.data;
 
-      // Add song to the newly created playlist
-      await apiClient.post(`/api/playlists/${newPlaylist._id}/songs`, {
-        songId: songToAdd._id
-      });
+      // Add song to the newly created playlist only if there's a song to add
+      if (songToAdd) {
+        await apiClient.post(`/api/playlists/${newPlaylist._id}/songs`, {
+          songId: songToAdd._id
+        });
+      }
 
       closeAddToPlaylistModal();
       setNewPlaylistName('');
@@ -132,7 +134,7 @@ const AddToPlaylistModal: React.FC = () => {
     setError('');
   };
 
-  if (!isAddToPlaylistModalOpen || !songToAdd) return null;
+  if (!isAddToPlaylistModalOpen) return null;
 
   // Show login prompt if user is not authenticated
   if (!user) {
@@ -141,7 +143,9 @@ const AddToPlaylistModal: React.FC = () => {
         <div className="bg-gray-900 border border-gray-800 rounded-lg shadow-xl max-w-md w-full flex flex-col">
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-700">
-            <h2 className="text-lg font-semibold text-white">Add to Playlist</h2>
+            <h2 className="text-lg font-semibold text-white">
+              {songToAdd ? 'Add to Playlist' : 'Create Playlist'}
+            </h2>
             <button
               onClick={handleClose}
               className="text-gray-400 hover:text-gray-200 transition-colors"
@@ -155,7 +159,10 @@ const AddToPlaylistModal: React.FC = () => {
             <LogIn className="mx-auto mb-4 text-gray-400" size={48} />
             <h3 className="text-xl font-medium text-white mb-2">Login Required</h3>
             <p className="text-gray-300 mb-6">
-              Please log in to add songs to your playlists and create new ones.
+              {songToAdd 
+                ? 'Please log in to add songs to your playlists and create new ones.'
+                : 'Please log in to create and manage your playlists.'
+              }
             </p>
             <button
               onClick={() => {
@@ -177,7 +184,9 @@ const AddToPlaylistModal: React.FC = () => {
       <div className="bg-gray-900 border border-gray-800 rounded-lg shadow-xl max-w-md w-full max-h-96 flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-700">
-          <h2 className="text-lg font-semibold text-white">Add to Playlist</h2>
+          <h2 className="text-lg font-semibold text-white">
+            {songToAdd ? 'Add to Playlist' : 'Create Playlist'}
+          </h2>
           <button
             onClick={handleClose}
             className="text-gray-400 hover:text-gray-200 transition-colors"
@@ -241,7 +250,7 @@ const AddToPlaylistModal: React.FC = () => {
                               Creating...
                             </>
                           ) : (
-                            'Create & Add Song'
+                            songToAdd ? 'Create & Add Song' : 'Create Playlist'
                           )}
                         </button>
                         <button
