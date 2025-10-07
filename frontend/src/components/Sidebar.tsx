@@ -14,6 +14,7 @@ import {
   LucideIcon
 } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { usePlayer } from '../contexts/PlayerContext';
 import { useUI } from '../contexts/UIContext';
 import { useSearch } from '../contexts/SearchContext';
@@ -31,6 +32,7 @@ interface NavigationItem {
   label: string;
   active?: boolean;
   onClick?: () => void;
+  to?: string;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
@@ -47,7 +49,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const closeFocusModal = () => setIsFocusModalOpen(false);
   
   const navigationItems: NavigationItem[] = [
-    { icon: Home, label: 'Home', active: true },
+    { icon: Home, label: 'Home', active: true, to: '/' },
     { icon: Search, label: 'Search', onClick: openSearch },
     { icon: Library, label: 'Your Library', onClick: openLibraryModal },
   ];
@@ -100,14 +102,25 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
           <ul className="space-y-1">
             {navigationItems.map((item) => (
               <li key={item.label}>
-                <div 
-                  className={`sidebar-item group ${item.active ? 'active' : ''} ${isCollapsed ? 'collapsed justify-center' : ''} ${item.onClick ? 'cursor-pointer' : ''}`}
-                  title={isCollapsed ? item.label : ''}
-                  onClick={item.onClick}
-                >
-                  <item.icon size={20} className="flex-shrink-0" />
-                  <span className={`truncate ${isCollapsed ? 'hidden' : ''}`}>{item.label}</span>
-                </div>
+                {item.to ? (
+                  <Link
+                    to={item.to}
+                    className={`sidebar-item group ${item.active ? 'active' : ''} ${isCollapsed ? 'collapsed justify-center' : ''}`}
+                    title={isCollapsed ? item.label : ''}
+                  >
+                    <item.icon size={20} className="flex-shrink-0" />
+                    <span className={`truncate ${isCollapsed ? 'hidden' : ''}`}>{item.label}</span>
+                  </Link>
+                ) : (
+                  <div 
+                    className={`sidebar-item group ${item.active ? 'active' : ''} ${isCollapsed ? 'collapsed justify-center' : ''} ${item.onClick ? 'cursor-pointer' : ''}`}
+                    title={isCollapsed ? item.label : ''}
+                    onClick={item.onClick}
+                  >
+                    <item.icon size={20} className="flex-shrink-0" />
+                    <span className={`truncate ${isCollapsed ? 'hidden' : ''}`}>{item.label}</span>
+                  </div>
+                )}
               </li>
             ))}
           </ul>

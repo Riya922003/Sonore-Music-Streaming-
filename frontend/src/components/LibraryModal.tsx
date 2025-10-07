@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { useUI } from '../contexts/UIContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Playlist } from '../contexts/PlaylistContext';
@@ -61,11 +62,7 @@ const LibraryModal: React.FC = () => {
   };
 
   // Handle playlist selection
-  const handlePlaylistSelect = (playlist: Playlist) => {
-    console.log('📋 Selected playlist:', playlist);
-    // Navigate to playlist page - you'll need to implement routing
-    // For now, we'll just close the modal and log
-    window.location.href = `/playlist/${playlist._id}`;
+  const handlePlaylistSelect = () => {
     closeLibraryModal();
   };
 
@@ -228,9 +225,10 @@ const LibraryModal: React.FC = () => {
           {!isLoading && !error && filteredPlaylists.length > 0 && (
             <div className="space-y-2">
               {filteredPlaylists.map((playlist) => (
-                <div
+                <Link
                   key={playlist._id}
-                  onClick={() => handlePlaylistSelect(playlist)}
+                  to={`/playlist/${playlist._id}`}
+                  onClick={handlePlaylistSelect}
                   className="flex items-center p-3 rounded-lg hover:bg-gray-800 cursor-pointer transition-colors group"
                 >
                   {/* Playlist Thumbnail - using first song's artwork or placeholder */}
@@ -263,7 +261,7 @@ const LibraryModal: React.FC = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )}
