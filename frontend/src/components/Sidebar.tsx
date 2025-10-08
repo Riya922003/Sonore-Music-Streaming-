@@ -11,6 +11,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
+  Shuffle,
   LucideIcon
 } from 'lucide-react';
 import { useState } from 'react';
@@ -38,16 +39,25 @@ interface NavigationItem {
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const location = useLocation();
   const { currentSong } = usePlayer(); // Check if a song is currently playing
-  const { openLibraryModal, openCreatePlaylistModal } = useUI();
+  const { openLibraryModal, openCreatePlaylistModal, openBlendModal } = useUI();
   const { openSearch } = useSearch();
   const { isTimerActive } = useFocusTimer();
-  const { user, logout } = useAuth();
+  const { user, logout, openAuthModal } = useAuth();
   
   // Focus Queue Modal state
   const [isFocusModalOpen, setIsFocusModalOpen] = useState(false);
   
   const openFocusModal = () => setIsFocusModalOpen(true);
   const closeFocusModal = () => setIsFocusModalOpen(false);
+  
+  // Handle blend modal with authentication check
+  const handleBlendModal = () => {
+    if (!user) {
+      openAuthModal();
+    } else {
+      openBlendModal();
+    }
+  };
   
   // Determine which navigation item should be active based on current route
   const isHomePage = location.pathname === '/';
@@ -64,6 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
 
   const libraryItems: NavigationItem[] = [
     { icon: Plus, label: 'Create Playlist', onClick: openCreatePlaylistModal },
+    { icon: Shuffle, label: 'Blend Playlists', onClick: handleBlendModal },
     { icon: Clock, label: 'Focus Queue', onClick: openFocusModal, active: isTimerActive },
     { icon: Heart, label: 'Liked Songs' },
     { icon: Download, label: 'Downloads' },

@@ -8,14 +8,17 @@ import AuthModal from './components/AuthModal.tsx';
 import SearchModal from './components/SearchModal.tsx';
 import AddToPlaylistModal from './components/AddToPlaylistModal.tsx';
 import LibraryModal from './components/LibraryModal.tsx';
+import BlendModal from './components/BlendModal.tsx';
 import PlaylistPage from './pages/PlaylistPage.tsx';
 import { useAuth } from './contexts/AuthContext';
 import { useSearch } from './contexts/SearchContext';
+import { useUI } from './contexts/UIContext';
 
 function App() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { isAuthModalOpen } = useAuth();
   const { isSearchOpen, openSearch } = useSearch();
+  const { isBlendModalOpen, closeBlendModal } = useUI();
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -74,6 +77,9 @@ function App() {
         
         {/* Add to Playlist Modal */}
         <AddToPlaylistModal />
+        
+        {/* Blend Modal */}
+        {isBlendModalOpen && <BlendModal isOpen={isBlendModalOpen} onClose={closeBlendModal} />}
       </div>
     </Router>
   );

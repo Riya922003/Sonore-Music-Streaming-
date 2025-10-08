@@ -16,6 +16,11 @@ interface UIContextType {
   isLibraryModalOpen: boolean;
   openLibraryModal: () => void;
   closeLibraryModal: () => void;
+  
+  // Blend Modal state
+  isBlendModalOpen: boolean;
+  openBlendModal: () => void;
+  closeBlendModal: () => void;
 }
 
 // Create the context
@@ -31,6 +36,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
   const [songToAdd, setSongToAdd] = useState<Song | null>(null);
   const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false);
   const [isLibraryModalOpen, setIsLibraryModalOpen] = useState(false);
+  const [isBlendModalOpen, setIsBlendModalOpen] = useState(false);
 
   const openAddToPlaylistModal = (song: Song) => {
     setSongToAdd(song);
@@ -55,6 +61,14 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     setIsLibraryModalOpen(false);
   };
 
+  const openBlendModal = () => {
+    setIsBlendModalOpen(true);
+  };
+
+  const closeBlendModal = () => {
+    setIsBlendModalOpen(false);
+  };
+
   const value: UIContextType = {
     songToAdd,
     isAddToPlaylistModalOpen,
@@ -64,6 +78,9 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     isLibraryModalOpen,
     openLibraryModal,
     closeLibraryModal,
+    isBlendModalOpen,
+    openBlendModal,
+    closeBlendModal,
   };
 
   return (

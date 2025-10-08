@@ -19,6 +19,7 @@ app.use('/audio', express.static(path.join(__dirname, 'songs-to-upload')));
 const authRouter = require('./routes/auth');
 const songsRouter = require('./routes/songs');
 const playlistsRouter = require('./routes/playlists');
+const userRouter = require('./routes/user');
 
 // Use routes
 app.use('/api/auth', authRouter);
@@ -26,6 +27,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/songs', songsRouter); // FIXED
 // ---------------------------------
 app.use('/api/playlists', playlistsRouter);
+app.use('/api/me', userRouter);
 
 // Basic route
 app.get('/', (req, res) => {
