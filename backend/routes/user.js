@@ -104,6 +104,100 @@ router.delete('/likes/:songId', authMiddleware, async (req, res) => {
   }
 });
 
+// POST /history/:songId - Add song to user's recently played history
+router.post('/history/:songId', authMiddleware, async (req, res) => {
+  try {
+    const { songId } = req.params;
+    const userId = req.user.id;
+
+    console.log('POST /history/:songId - Request received:', { songId, userId });
+
+    // Validate songId format
+    if (!mongoose.Types.ObjectId.isValid(songId)) {
+      return res.status(400).json({ message: 'Invalid song ID format' });
+    }
+
+    const songObjectId = new mongoose.Types.ObjectId(songId);
+
+    // Update user's recently played history
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        // First remove the song if it already exists (to avoid duplicates)
+        $pull: { recentlyPlayed: songObjectId }
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Then add the song to the beginning and keep only the latest 20
+    await User.findByIdAndUpdate(
+      userId,
+      {
+        $push: {
+          recentlyPlayed: {
+            $each: [songObjectId],
+            $position: 0,
+            $slice: 20
+          }
+        }
+      }
+    );
+
+    console.log('Song added to recently played history:', { songId, userId });
+
+    res.status(200).json({ 
+      message: 'Song added to recently played history successfully'
+    });
+  } catch (error) {
+    console.error('Error adding song to history:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// GET /history - Get user's recently played songs
+router.get('/history', authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Find the user and populate recently played songs
+    const user = await User.findById(userId).populate({
+      path: 'recentlyPlayed',
+      model: 'Song'
+    });
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Map the songs to match frontend expectations
+    const recentlyPlayedSongs = user.recentlyPlayed.map(song => ({
+      _id: song._id,
+      title: song.title,
+      artist: song.artist,
+      album: song.album,
+      albumArt: song.thumbnail, // Map thumbnail to albumArt
+      audioUrl: song.url,       // Map url to audioUrl
+      duration: song.duration,
+      genre: song.genre,
+      language: song.language,
+      uploadedBy: song.uploadedBy,
+      createdAt: song.createdAt,
+      updatedAt: song.updatedAt
+    }));
+
+    res.status(200).json({ 
+      recentlyPlayed: recentlyPlayedSongs
+    });
+  } catch (error) {
+    console.error('Error fetching recently played songs:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 // GET /likes - Get user's liked songs with full song objects
 router.get('/likes', authMiddleware, async (req, res) => {
   try {

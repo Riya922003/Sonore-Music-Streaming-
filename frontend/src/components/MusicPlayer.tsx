@@ -4,6 +4,7 @@ import { usePlayer } from '../contexts/PlayerContext';
 import { useUI } from '../contexts/UIContext';
 import { useAuth } from '../contexts/AuthContext';
 import ElasticSlider from './ElasticSlider';
+import apiClient from '../api';
 
 const MusicPlayer: React.FC = () => {
   const { currentSong, isPlaying, togglePlayPause, playNext, playPrevious } = usePlayer();
@@ -16,6 +17,7 @@ const MusicPlayer: React.FC = () => {
   const [repeat, setRepeat] = useState<boolean>(false);
   const [usingFallback, setUsingFallback] = useState<boolean>(false);
   const demoTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const historyLoggedRef = useRef<string | null>(null); // Track which song has had its history logged
 
   // Helper function to format seconds into "minutes:seconds" string
   const formatTime = (seconds: number): string => {
@@ -44,6 +46,9 @@ const MusicPlayer: React.FC = () => {
       
       // Reset fallback state for new song
       setUsingFallback(false);
+      
+      // Reset history tracking for new song
+      historyLoggedRef.current = null;
       
       // Set up error handler for this specific song load
       const handleLoadError = () => {
@@ -135,6 +140,36 @@ const MusicPlayer: React.FC = () => {
       audioRef.current.volume = volume;
     }
   }, [volume]);
+
+  // Effect to track song history when user listens for 15+ seconds
+  useEffect(() => {
+    // Only track if user is logged in, song exists, and we haven't already logged this song
+    if (!user || !currentSong || !currentSong._id) {
+      return;
+    }
+
+    // Check if currentTime has crossed 15 seconds and we haven't logged this song yet
+    if (currentTime >= 15 && currentTime < 16 && historyLoggedRef.current !== currentSong._id) {
+      console.log('Logging song to history:', currentSong.title);
+      
+      // Mark this song as logged to prevent duplicate calls
+      historyLoggedRef.current = currentSong._id;
+      
+      // Call the backend API to log the song
+      const logSongHistory = async () => {
+        try {
+          await apiClient.post(`/api/me/history/${currentSong._id}`);
+          console.log('Song successfully logged to history');
+        } catch (error) {
+          console.error('Error logging song to history:', error);
+          // Reset the ref on error so we can try again
+          historyLoggedRef.current = null;
+        }
+      };
+
+      logSongHistory();
+    }
+  }, [currentTime, currentSong, user]);
 
   // Handle audio metadata loaded (to get duration)
   const handleLoadedMetadata = () => {
