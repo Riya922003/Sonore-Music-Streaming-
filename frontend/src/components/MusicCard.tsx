@@ -1,7 +1,8 @@
-import { Play, MoreVertical } from 'lucide-react';
+import { Play, MoreVertical, Heart } from 'lucide-react';
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { useUI } from '../contexts/UIContext';
+import { useAuth } from '../contexts/AuthContext';
 import { Song } from '../contexts/PlayerContext';
 
 interface MusicCardProps {
@@ -29,6 +30,7 @@ const MusicCard: React.FC<MusicCardProps> = ({
   song
 }) => {
   const { openAddToPlaylistModal } = useUI();
+  const { user, toggleLike } = useAuth();
   const sizeClasses = {
     small: {
       container: 'w-32',
@@ -121,6 +123,27 @@ const MusicCard: React.FC<MusicCardProps> = ({
             aria-label={`Play ${title}`}
           >
             <Play size={classes.playIcon} fill="currentColor" />
+          </button>
+        )}
+
+        {/* Heart/Like button */}
+        {user && song && (
+          <button 
+            className={`absolute bottom-2 left-2 ${
+              user.likedSongs.includes(song._id)
+                ? 'bg-red-500 text-white' 
+                : 'bg-black/50 text-white hover:bg-black/70'
+            } p-2 rounded-full opacity-0 group-hover:opacity-100 hover:scale-110 transition-all duration-200 shadow-lg`}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleLike(song._id);
+            }}
+            aria-label={user.likedSongs.includes(song._id) ? 'Remove from liked songs' : 'Add to liked songs'}
+          >
+            <Heart 
+              size={16} 
+              fill={user.likedSongs.includes(song._id) ? 'currentColor' : 'none'}
+            />
           </button>
         )}
         

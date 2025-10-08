@@ -23,7 +23,7 @@ const userSchema = new mongoose.Schema({
     default: null
   },
   likedSongs: {
-    type: [String],
+    type: [mongoose.Schema.Types.ObjectId],
     default: []
   },
   playlists: {

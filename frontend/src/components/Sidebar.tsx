@@ -76,7 +76,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     { icon: Plus, label: 'Create Playlist', onClick: openCreatePlaylistModal },
     { icon: Shuffle, label: 'Blend Playlists', onClick: handleBlendModal },
     { icon: Clock, label: 'Focus Queue', onClick: openFocusModal, active: isTimerActive },
-    { icon: Heart, label: 'Liked Songs' },
+    { icon: Heart, label: 'Liked Songs', to: '/liked-songs', active: location.pathname === '/liked-songs' },
     { icon: Download, label: 'Downloads' },
   ];
 
@@ -155,17 +155,31 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
           <ul className="space-y-1">
             {libraryItems.map((item) => (
               <li key={item.label}>
-                <div 
-                  className={`sidebar-item group ${item.active ? 'active' : ''} ${isCollapsed ? 'collapsed justify-center' : ''} ${item.onClick ? 'cursor-pointer' : ''}`}
-                  title={isCollapsed ? item.label : ''}
-                  onClick={item.onClick}
-                >
-                  <item.icon size={20} className="flex-shrink-0" />
-                  <span className={`truncate ${isCollapsed ? 'hidden' : ''}`}>{item.label}</span>
-                  {item.active && !isCollapsed && (
-                    <div className="w-2 h-2 bg-green-500 rounded-full ml-auto flex-shrink-0"></div>
-                  )}
-                </div>
+                {item.to ? (
+                  <Link
+                    to={item.to}
+                    className={`sidebar-item group ${item.active ? 'active' : ''} ${isCollapsed ? 'collapsed justify-center' : ''}`}
+                    title={isCollapsed ? item.label : ''}
+                  >
+                    <item.icon size={20} className="flex-shrink-0" />
+                    <span className={`truncate ${isCollapsed ? 'hidden' : ''}`}>{item.label}</span>
+                    {item.active && !isCollapsed && (
+                      <div className="w-2 h-2 bg-green-500 rounded-full ml-auto flex-shrink-0"></div>
+                    )}
+                  </Link>
+                ) : (
+                  <div 
+                    className={`sidebar-item group ${item.active ? 'active' : ''} ${isCollapsed ? 'collapsed justify-center' : ''} ${item.onClick ? 'cursor-pointer' : ''}`}
+                    title={isCollapsed ? item.label : ''}
+                    onClick={item.onClick}
+                  >
+                    <item.icon size={20} className="flex-shrink-0" />
+                    <span className={`truncate ${isCollapsed ? 'hidden' : ''}`}>{item.label}</span>
+                    {item.active && !isCollapsed && (
+                      <div className="w-2 h-2 bg-green-500 rounded-full ml-auto flex-shrink-0"></div>
+                    )}
+                  </div>
+                )}
               </li>
             ))}
           </ul>

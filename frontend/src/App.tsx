@@ -10,6 +10,7 @@ import AddToPlaylistModal from './components/AddToPlaylistModal.tsx';
 import LibraryModal from './components/LibraryModal.tsx';
 import BlendModal from './components/BlendModal.tsx';
 import PlaylistPage from './pages/PlaylistPage.tsx';
+import LikedSongsPage from './pages/LikedSongsPage.tsx';
 import { useAuth } from './contexts/AuthContext';
 import { useSearch } from './contexts/SearchContext';
 import { useUI } from './contexts/UIContext';
@@ -58,6 +59,7 @@ function App() {
                 <Routes>
                   <Route path="/" element={<MainContent />} />
                   <Route path="/playlist/:playlistId" element={<PlaylistPage />} />
+                  <Route path="/liked-songs" element={<LikedSongsPage />} />
                 </Routes>
               </div>
             </main>

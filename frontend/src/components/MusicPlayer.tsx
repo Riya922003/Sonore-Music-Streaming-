@@ -1,12 +1,14 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Repeat, Plus } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Repeat, Plus, Heart } from 'lucide-react';
 import { usePlayer } from '../contexts/PlayerContext';
 import { useUI } from '../contexts/UIContext';
+import { useAuth } from '../contexts/AuthContext';
 import ElasticSlider from './ElasticSlider';
 
 const MusicPlayer: React.FC = () => {
   const { currentSong, isPlaying, togglePlayPause, playNext, playPrevious } = usePlayer();
   const { openAddToPlaylistModal } = useUI();
+  const { user, toggleLike } = useAuth();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [duration, setDuration] = useState<number>(0);
@@ -285,6 +287,24 @@ const MusicPlayer: React.FC = () => {
               >
                 <Repeat size={20} />
               </button>
+
+              {/* Heart/Like button */}
+              {user && currentSong && (
+                <button 
+                  onClick={() => toggleLike(currentSong._id)}
+                  className={`p-1 rounded transition-colors ${
+                    user.likedSongs.includes(currentSong._id)
+                      ? 'text-red-500 bg-red-500/20' 
+                      : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                  }`}
+                  title={user.likedSongs.includes(currentSong._id) ? 'Remove from liked songs' : 'Add to liked songs'}
+                >
+                  <Heart 
+                    size={20} 
+                    fill={user.likedSongs.includes(currentSong._id) ? 'currentColor' : 'none'}
+                  />
+                </button>
+              )}
             </div>
 
             {/* Progress bar */}
