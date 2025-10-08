@@ -144,54 +144,57 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const toggleLike = async (songId: string) => {
     if (!user) return;
 
-    try {
-      const isLiked = user.likedSongs.includes(songId);
-      console.log('AuthContext: toggleLike called', { songId, isLiked, currentLikedSongs: user.likedSongs });
+    const isLiked = user.likedSongs.includes(songId);
+    
+    // Update local state immediately for fast UI response
+    setUser(prev => {
+      if (!prev) return null;
       
       if (isLiked) {
+        // Remove song from liked songs
+        return {
+          ...prev,
+          likedSongs: prev.likedSongs.filter(id => id !== songId)
+        };
+      } else {
+        // Add song to liked songs
+        return {
+          ...prev,
+          likedSongs: [...prev.likedSongs, songId]
+        };
+      }
+    });
+
+    // Make API call in background
+    try {
+      if (isLiked) {
         // Remove from liked songs
-        console.log('AuthContext: Removing song from likes');
         await apiClient.delete(`/api/me/likes/${songId}`);
-        setUser(prev => {
-          if (!prev) return null;
-          const newLikedSongs = prev.likedSongs.filter(id => id !== songId);
-          console.log('AuthContext: Updated likedSongs after removal', { 
-            before: prev.likedSongs, 
-            after: newLikedSongs 
-          });
-          return {
-            ...prev,
-            likedSongs: newLikedSongs
-          };
-        });
       } else {
         // Add to liked songs
-        console.log('AuthContext: Adding song to likes');
         await apiClient.post(`/api/me/likes/${songId}`);
-        setUser(prev => {
-          if (!prev) return null;
-          const newLikedSongs = [...prev.likedSongs, songId];
-          console.log('AuthContext: Updated likedSongs after addition', { 
-            before: prev.likedSongs, 
-            after: newLikedSongs 
-          });
-          return {
-            ...prev,
-            likedSongs: newLikedSongs
-          };
-        });
       }
     } catch (error) {
       console.error('Error toggling like:', error);
       
-      // If there's an error, refresh the liked songs from server to sync state
-      console.log('Refreshing liked songs from server due to error');
-      try {
-        const likedSongs = await fetchLikedSongs();
-        setUser(prev => prev ? { ...prev, likedSongs } : null);
-      } catch (refreshError) {
-        console.error('Error refreshing liked songs:', refreshError);
-      }
+      // Revert local state on API error
+      setUser(prev => {
+        if (!prev) return null;
+        
+        if (isLiked) {
+          // Revert removal - add the song back
+          return {
+            ...prev,
+            likedSongs: [...prev.likedSongs, songId]
+          };
+        } else {
+          // Revert addition - remove the song
+          return {
+            ...prev,
+            likedSongs: prev.likedSongs.filter(id => id !== songId)
+          };
+        }
+      });
     }
   };
 

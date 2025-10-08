@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const Song = require('../models/Song');
 const authMiddleware = require('../middleware/authMiddleware');
@@ -24,9 +25,20 @@ router.post('/likes/:songId', authMiddleware, async (req, res) => {
       });
     }
 
-    // Add song to liked songs array
-    user.likedSongs.push(songId);
+    // Add song to liked songs array (ensure ObjectId format)
+    const songObjectId = mongoose.Types.ObjectId.isValid(songId) 
+      ? new mongoose.Types.ObjectId(songId) 
+      : songId;
+    user.likedSongs.push(songObjectId);
     await user.save();
+
+    console.log('Song added to likes:', { 
+      songId, 
+      type: typeof songId,
+      userId,
+      updatedLikedSongs: user.likedSongs,
+      likedSongsCount: user.likedSongs.length
+    });
 
     res.status(200).json({ 
       message: 'Song added to liked songs successfully',
@@ -44,23 +56,43 @@ router.delete('/likes/:songId', authMiddleware, async (req, res) => {
     const { songId } = req.params;
     const userId = req.user.id;
 
-    // Find the user
-    const user = await User.findById(userId);
-    if (!user) {
+    console.log('DELETE /likes/:songId - Request received:', { songId, userId });
+
+    // First, get the user to see current liked songs
+    const userBefore = await User.findById(userId);
+    if (!userBefore) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Check if song is in liked songs
-    if (!user.likedSongs.includes(songId)) {
-      return res.status(200).json({ 
-        message: 'Song not in liked songs',
-        likedSongs: user.likedSongs
-      });
-    }
+    console.log('User before deletion:', { 
+      userId: userBefore._id,
+      likedSongs: userBefore.likedSongs,
+      likedSongsCount: userBefore.likedSongs.length 
+    });
 
-    // Remove song from liked songs array
-    user.likedSongs = user.likedSongs.filter(id => id !== songId);
+    // Check if song exists in liked songs before deletion
+    const songExists = userBefore.likedSongs.some(id => id.toString() === songId);
+    console.log('Song exists in liked songs:', songExists);
+
+    // Get the user and manually remove the song (more reliable than $pull)
+    const user = await User.findById(userId);
+    
+    console.log('Removing song using manual filtering approach...');
+    
+    // Filter out the song from likedSongs array
+    const originalCount = user.likedSongs.length;
+    user.likedSongs = user.likedSongs.filter(id => id.toString() !== songId);
+    
+    // Save the updated user
     await user.save();
+    
+    const removedCount = originalCount - user.likedSongs.length;
+    console.log('Removal result:', { 
+      originalCount,
+      newCount: user.likedSongs.length,
+      removedCount,
+      success: removedCount > 0
+    });
 
     res.status(200).json({ 
       message: 'Song removed from liked songs successfully',
