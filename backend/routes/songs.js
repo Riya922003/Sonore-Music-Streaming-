@@ -273,135 +273,108 @@ router.post(
   }
 );
 
-// GET video ID for a song using AI-generated search query
+// GET video ID for a song using AI-generated search query (rewritten with improved prompt and self-correction)
 router.get('/:id/video', authMiddleware, async (req, res) => {
   try {
-    // 1. Get the song ID from request parameters
     const { id } = req.params;
 
-    // 2. Find the song in MongoDB database to get its title and artist
-    let song;
-    try {
-      song = await Song.findById(id);
-      if (!song) {
-        return res.status(404).json({
-          success: false,
-          message: 'Song not found'
-        });
-      }
-    } catch (error) {
-      console.error('Database error finding song:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Database error occurred while finding song'
-      });
+    // 1. Fetch song details
+    const song = await Song.findById(id).select('title artist');
+    if (!song) {
+      return res.status(404).json({ success: false, message: 'Song not found' });
     }
 
-    // 3. Initialize the Google Generative AI client
-    let genAI;
+    const title = (song.title || '').trim();
+    const artist = (song.artist || '').trim();
+
+    // 2. Build a detailed, multi-line prompt for Gemini
+    const prompt = `You are an expert music video researcher. Your goal is to produce a single, concise YouTube search query that will most likely surface the official music video (or official audio/lyric video) for a given song.
+
+Instructions:
+- Prioritize the song title and the artist's official channel when possible.
+- Include one or more common keywords such as "Official Music Video", "Official Video", "Official Audio", or "lyric video" to increase the chance of finding the correct official upload.
+- Use the artist's name in the query.
+- Keep the query short (one line), formatted exactly as a search query string, and return only that query text with no extra commentary or explanation.
+
+Song title: "${title}"
+Artist: "${artist}"
+
+Return only the search query text.`;
+
+    // 3. Call Gemini to generate a candidate query
+    let aiQuery = '';
     try {
       if (!process.env.GEMINI_API_KEY) {
-        return res.status(500).json({
-          success: false,
-          message: 'GEMINI_API_KEY not configured'
-        });
+        return res.status(500).json({ success: false, message: 'GEMINI_API_KEY not configured' });
       }
-      genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    } catch (error) {
-      console.error('Error initializing Gemini AI:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Failed to initialize AI service'
-      });
-    }
-
-    // 4. Create a prompt for the Gemini model to generate a YouTube search query
-    const prompt = `Generate a YouTube search query to find the official music video or audio for the song "${song.title}" by "${song.artist}". Return only the search query text, nothing else.`;
-
-    // 5. Send the prompt to the Gemini API and get the resulting search query text
-    let searchQuery;
-    try {
-      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
       const result = await model.generateContent(prompt);
       const response = await result.response;
-      searchQuery = response.text().trim();
-      
-      if (!searchQuery) {
-        // Fallback to basic search query if AI doesn't return anything
-        searchQuery = `${song.title} ${song.artist} official`;
-      }
-    } catch (error) {
-      console.error('Error generating search query with Gemini:', error);
-      // Fallback to basic search query if AI fails
-      searchQuery = `${song.title} ${song.artist} official`;
+      aiQuery = (response && response.text && response.text().trim()) || '';
+      console.log('Gemini candidate query:', aiQuery);
+    } catch (err) {
+      console.error('Gemini generation error:', err);
+      aiQuery = '';
     }
 
-    // 6. Initialize the YouTube Data API client
-    let youtube;
+    // 4. Self-correction: ensure the AI query contains the artist and at least one keyword
+    const fallbackQuery = `${title} ${artist} official video`;
+    const keywords = ['official', 'video', 'audio', 'lyric'];
+    const containsArtist = artist ? aiQuery.toLowerCase().includes(artist.toLowerCase()) : false;
+    const containsKeyword = keywords.some(k => aiQuery.toLowerCase().includes(k));
+
+    let finalQuery = aiQuery;
+    let usedFallback = false;
+    if (!aiQuery || !containsArtist || !containsKeyword) {
+      finalQuery = fallbackQuery;
+      usedFallback = true;
+      console.log('AI query discarded; using fallback query:', finalQuery);
+    } else {
+      console.log('Using AI-generated query as final query:', finalQuery);
+    }
+
+    // 5. Use the finalQuery with the YouTube Data API
     try {
       if (!process.env.YOUTUBE_API_KEY) {
-        return res.status(500).json({
-          success: false,
-          message: 'YOUTUBE_API_KEY not configured'
-        });
+        return res.status(500).json({ success: false, message: 'YOUTUBE_API_KEY not configured' });
       }
-      youtube = google.youtube({
-        version: 'v3',
-        auth: process.env.YOUTUBE_API_KEY
-      });
-    } catch (error) {
-      console.error('Error initializing YouTube API:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Failed to initialize YouTube API service'
-      });
-    }
-
-    // 7. Use the YouTube client to perform a video search with the query generated by Gemini
-    let searchResults;
-    try {
+      const youtube = google.youtube({ version: 'v3', auth: process.env.YOUTUBE_API_KEY });
       const searchResponse = await youtube.search.list({
         part: 'snippet',
-        q: searchQuery,
+        q: finalQuery,
         type: 'video',
         maxResults: 1,
         order: 'relevance'
       });
-      
-      searchResults = searchResponse.data.items;
-      
-      if (!searchResults || searchResults.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: 'No video found for this song'
-        });
+
+      const items = (searchResponse && searchResponse.data && searchResponse.data.items) || [];
+      if (!items || items.length === 0) {
+        return res.status(404).json({ success: false, message: 'No video found for this song' });
       }
-    } catch (error) {
-      console.error('Error searching YouTube:', error);
-      return res.status(500).json({
-        success: false,
-        message: 'Failed to search YouTube for video'
+
+      const videoItem = items[0];
+      const videoId = videoItem.id && videoItem.id.videoId ? videoItem.id.videoId : null;
+      if (!videoId) {
+        return res.status(404).json({ success: false, message: 'No video id found in YouTube response' });
+      }
+
+      // 6. Return response with metadata for debugging
+      return res.status(200).json({
+        success: true,
+        videoId,
+        searchQuery: finalQuery,
+        aiCandidate: aiQuery,
+        usedFallback
       });
+    } catch (ytErr) {
+      console.error('YouTube API error:', ytErr);
+      return res.status(500).json({ success: false, message: 'Failed to search YouTube for video' });
     }
-
-    // 8. Extract the video ID from the first item in the YouTube search results
-    const videoId = searchResults[0].id.videoId;
-
-    // 9. Return a 200 OK status with a JSON object containing the videoId
-    res.status(200).json({
-      success: true,
-      videoId: videoId,
-      searchQuery: searchQuery,
-      videoTitle: searchResults[0].snippet.title,
-      videoChannel: searchResults[0].snippet.channelTitle
-    });
 
   } catch (error) {
     console.error('Unexpected error in video route:', error);
-    res.status(500).json({
-      success: false,
-      message: 'An unexpected error occurred while fetching video'
-    });
+    return res.status(500).json({ success: false, message: 'An unexpected error occurred while fetching video' });
   }
 });
 
