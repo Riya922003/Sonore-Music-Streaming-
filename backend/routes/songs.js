@@ -321,7 +321,7 @@ router.get('/:id/video', authMiddleware, async (req, res) => {
     // 5. Send the prompt to the Gemini API and get the resulting search query text
     let searchQuery;
     try {
-      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
       const result = await model.generateContent(prompt);
       const response = await result.response;
       searchQuery = response.text().trim();
