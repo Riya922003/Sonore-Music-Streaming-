@@ -36,7 +36,12 @@ This repository contains the source code and configuration to run Sonore locally
 - Fast, resilient audio streaming
 - Modern responsive UI (desktop & mobile)
 - Search and discovery (by track, artist, album, genre)
-- Playlist management (create, update, share)
+- Playlist management
+  - Create playlists: build and save custom playlists from any tracks in the catalog.
+  - Blend playlists: merge or "blend" multiple playlists into a single listening session (mix tracks from several playlists while preserving order/weights).
+- Video lookup for songs: checkout videos of a song — the backend can generate a best-effort YouTube search query (and return a video id) so clients can show the official music video, lyric video, or official audio when available.
+- Link songs: attach external links or related-track references to songs (for example, link to remixes, alternate versions, or artist pages).
+- Focus queue feature: create a temporary, focused playback queue — build sessions by duration, by genre/language filters, or by blended playlists to reduce distractions and keep listening tightly curated.
 - User authentication and profiles
 - Basic analytics (listening counts, favorites)
 - Extensible architecture for integrations (third-party catalogs, ads, social)
@@ -184,6 +189,12 @@ Planned improvements:
 - Recommendations & personalized radio
 - Mobile apps (iOS/Android)
 - Monetization features (subscriptions, ads)
+
+Additional planned / upcoming features:
+- Blend playlists (improved controls and weighting for mixed playlists)
+- Focus queue enhancements (duration-based queue generation, smarter sampling)
+- Link songs / related content (deeper linking for remixes, videos, and artist pages)
+- AI Music Insights (coming soon): an AI-powered dashboard that will analyze tracks and listening patterns to provide insights such as mood, key, tempo, segment highlights, recommended playlists, and personalized analytics for creators and listeners.
 
 Open issues and feature requests are tracked in GitHub Issues. Please add ideas or request features there.
 
