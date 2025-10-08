@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Heart, Play, Music, Clock, Calendar, Loader2, AlertCircle } from 'lucide-react';
+import { Heart, Play, Music, Clock, Calendar, Loader2, LogIn, HeartHandshake, Info } from 'lucide-react';
 import { usePlayer, Song } from '../contexts/PlayerContext';
 import { useAuth } from '../contexts/AuthContext';
 import apiClient from '../api';
 
 const LikedSongsPage: React.FC = () => {
   const { playSong } = usePlayer();
-  const { user, toggleLike } = useAuth();
+  const { user, toggleLike, openAuthModal } = useAuth();
   
   const [likedSongs, setLikedSongs] = useState<Song[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -117,11 +117,24 @@ const LikedSongsPage: React.FC = () => {
   // Error state
   if (error) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-gray-950 text-white">
-        <div className="text-center">
-          <AlertCircle className="mx-auto mb-4 text-red-500" size={48} />
-          <h2 className="text-xl font-semibold mb-2">Error Loading Liked Songs</h2>
-          <p className="text-gray-300">{error}</p>
+      <div className="flex-1 flex items-center justify-center bg-gradient-to-b from-gray-900 to-gray-950 text-white">
+        <div className="text-center max-w-md px-6">
+          <div className="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Info className="text-blue-400" size={40} />
+          </div>
+          <h2 className="text-2xl font-bold mb-3 text-white">Oops! Something went wrong</h2>
+          <p className="text-gray-400 mb-6 leading-relaxed">
+            We're having trouble loading your liked songs right now. This might be a temporary issue.
+          </p>
+          <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 mb-6">
+            <p className="text-sm text-gray-300">{error}</p>
+          </div>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full font-medium transition-colors duration-200"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
@@ -130,11 +143,24 @@ const LikedSongsPage: React.FC = () => {
   // Not logged in
   if (!user) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-gray-950 text-white">
-        <div className="text-center">
-          <Heart className="mx-auto mb-4 text-gray-500" size={48} />
-          <h2 className="text-xl font-semibold mb-2">Login Required</h2>
-          <p className="text-gray-300">Please log in to view your liked songs.</p>
+      <div className="flex-1 flex items-center justify-center bg-gradient-to-b from-purple-900/20 to-gray-950 text-white">
+        <div className="text-center max-w-md px-6">
+          <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+            <HeartHandshake className="text-white" size={48} />
+          </div>
+          <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            Your Music Collection
+          </h2>
+          <p className="text-gray-300 mb-8 leading-relaxed">
+            Sign in to access your personalized liked songs collection and discover your favorite tracks.
+          </p>
+          <button 
+            onClick={openAuthModal} 
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-3 rounded-full font-medium transition-all duration-200 transform hover:scale-105 flex items-center gap-2 mx-auto"
+          >
+            <LogIn size={20} />
+            Sign In to Continue
+          </button>
         </div>
       </div>
     );
