@@ -133,6 +133,8 @@ const MusicSection: React.FC<MusicSectionProps> = ({ title, fetchUrl, items, typ
           allSongs = songsData;
         } else if (songsData && Array.isArray(songsData.songs)) {
           allSongs = songsData.songs;
+        } else if (songsData && Array.isArray(songsData.recentlyPlayed)) {
+          allSongs = songsData.recentlyPlayed;
         } else if (songsData && songsData.data && Array.isArray(songsData.data)) {
           allSongs = songsData.data;
         } else {

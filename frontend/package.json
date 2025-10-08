@@ -26,6 +26,7 @@
     "react-hot-toast": "^2.6.0",
     "react-loading-skeleton": "^3.5.0",
     "react-router-dom": "^7.5.0",
+    "react-youtube": "^10.1.0",
     "tailwindcss": "^4.1.12"
   },
   "devDependencies": {

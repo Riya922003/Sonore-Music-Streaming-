@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Repeat, Plus, Heart } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Repeat, Plus, Heart, Film } from 'lucide-react';
 import { usePlayer } from '../contexts/PlayerContext';
 import { useUI } from '../contexts/UIContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -8,7 +8,7 @@ import apiClient from '../api';
 
 const MusicPlayer: React.FC = () => {
   const { currentSong, isPlaying, togglePlayPause, playNext, playPrevious } = usePlayer();
-  const { openAddToPlaylistModal } = useUI();
+  const { openAddToPlaylistModal, openVideoModal } = useUI();
   const { user, toggleLike } = useAuth();
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentTime, setCurrentTime] = useState<number>(0);
@@ -143,8 +143,17 @@ const MusicPlayer: React.FC = () => {
 
   // Effect to track song history when user listens for 15+ seconds
   useEffect(() => {
+    console.log('History tracking useEffect triggered:', {
+      user: !!user,
+      currentSong: currentSong?.title || 'none',
+      songId: currentSong?._id,
+      currentTime,
+      historyLoggedFor: historyLoggedRef.current
+    });
+    
     // Only track if user is logged in, song exists, and we haven't already logged this song
     if (!user || !currentSong || !currentSong._id) {
+      console.log('History tracking skipped - missing user, song, or songId');
       return;
     }
 
@@ -182,7 +191,9 @@ const MusicPlayer: React.FC = () => {
   // Handle audio time updates
   const handleTimeUpdate = () => {
     if (audioRef.current) {
-      setCurrentTime(audioRef.current.currentTime);
+      const newTime = audioRef.current.currentTime;
+      console.log('Audio time update:', newTime);
+      setCurrentTime(newTime);
     }
   };
 
@@ -210,6 +221,26 @@ const MusicPlayer: React.FC = () => {
   const handleAddToPlaylist = () => {
     if (currentSong) {
       openAddToPlaylistModal(currentSong);
+    }
+  };
+
+  const handleVideoClick = async () => {
+    if (!currentSong) return;
+    
+    try {
+      console.log('Fetching video for song:', currentSong._id);
+      const response = await apiClient.get(`/api/songs/${currentSong._id}/video`);
+      
+      if (response.data.success && response.data.videoId) {
+        console.log('Video found:', response.data.videoId);
+        openVideoModal(response.data.videoId);
+      } else {
+        console.error('No video found for this song');
+        // You could show a toast notification here
+      }
+    } catch (error) {
+      console.error('Error fetching video:', error);
+      // You could show a toast notification here
     }
   };
 
@@ -338,6 +369,17 @@ const MusicPlayer: React.FC = () => {
                     size={20} 
                     fill={user.likedSongs.includes(currentSong._id) ? 'currentColor' : 'none'}
                   />
+                </button>
+              )}
+
+              {/* Video button */}
+              {user && currentSong && (
+                <button 
+                  onClick={handleVideoClick}
+                  className="p-1 rounded transition-colors text-gray-400 hover:text-white hover:bg-gray-700"
+                  title="Watch video"
+                >
+                  <Film size={20} />
                 </button>
               )}
             </div>

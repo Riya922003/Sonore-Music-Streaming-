@@ -7,12 +7,14 @@
     "dev": "nodemon src/server.ts"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.7.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "google-auth-library": "^10.4.0",
+    "googleapis": "^161.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.3.0",
     "multer": "^2.0.2"

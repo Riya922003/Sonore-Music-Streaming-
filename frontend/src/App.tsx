@@ -11,6 +11,7 @@ import SearchModal from './components/SearchModal.tsx';
 import AddToPlaylistModal from './components/AddToPlaylistModal.tsx';
 import LibraryModal from './components/LibraryModal.tsx';
 import BlendModal from './components/BlendModal.tsx';
+import VideoModal from './components/VideoModal.tsx';
 import PlaylistPage from './pages/PlaylistPage.tsx';
 import LikedSongsPage from './pages/LikedSongsPage.tsx';
 import { useAuth } from './contexts/AuthContext';
@@ -21,7 +22,7 @@ function App() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { isAuthModalOpen } = useAuth();
   const { isSearchOpen, openSearch } = useSearch();
-  const { isBlendModalOpen, closeBlendModal } = useUI();
+  const { isBlendModalOpen, closeBlendModal, isVideoModalOpen, currentVideoId, closeVideoModal } = useUI();
 
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -85,6 +86,13 @@ function App() {
         
         {/* Blend Modal */}
         {isBlendModalOpen && <BlendModal isOpen={isBlendModalOpen} onClose={closeBlendModal} />}
+        
+        {/* Video Modal */}
+        <VideoModal 
+          videoId={currentVideoId}
+          isOpen={isVideoModalOpen}
+          onClose={closeVideoModal}
+        />
         
         {/* Toast Notifications */}
         <Toaster

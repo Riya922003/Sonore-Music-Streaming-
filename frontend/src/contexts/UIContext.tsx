@@ -21,6 +21,12 @@ interface UIContextType {
   isBlendModalOpen: boolean;
   openBlendModal: () => void;
   closeBlendModal: () => void;
+  
+  // Video Modal state
+  isVideoModalOpen: boolean;
+  currentVideoId: string;
+  openVideoModal: (videoId: string) => void;
+  closeVideoModal: () => void;
 }
 
 // Create the context
@@ -37,6 +43,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
   const [isAddToPlaylistModalOpen, setIsAddToPlaylistModalOpen] = useState(false);
   const [isLibraryModalOpen, setIsLibraryModalOpen] = useState(false);
   const [isBlendModalOpen, setIsBlendModalOpen] = useState(false);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [currentVideoId, setCurrentVideoId] = useState('');
 
   const openAddToPlaylistModal = (song: Song) => {
     setSongToAdd(song);
@@ -69,6 +77,16 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     setIsBlendModalOpen(false);
   };
 
+  const openVideoModal = (videoId: string) => {
+    setCurrentVideoId(videoId);
+    setIsVideoModalOpen(true);
+  };
+
+  const closeVideoModal = () => {
+    setIsVideoModalOpen(false);
+    setCurrentVideoId('');
+  };
+
   const value: UIContextType = {
     songToAdd,
     isAddToPlaylistModalOpen,
@@ -81,6 +99,10 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     isBlendModalOpen,
     openBlendModal,
     closeBlendModal,
+    isVideoModalOpen,
+    currentVideoId,
+    openVideoModal,
+    closeVideoModal,
   };
 
   return (
