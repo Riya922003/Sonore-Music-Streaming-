@@ -114,8 +114,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         </button>
       </div>
 
-      {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto px-2 py-4">
+  {/* Scrollable Content */}
+  <div className="sidebar-content scrollbar-hide px-2 py-4">
         {/* Navigation */}
         <nav className="mb-6">
           <ul className="space-y-1">
