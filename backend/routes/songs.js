@@ -143,18 +143,15 @@ router.get('/:id/video', authMiddleware, async (req, res) => {
     }
 
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    // FIX: Specify a stable model name
+    // Use the correct model name for the current API
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `Generate the best possible YouTube search query to find the official music video for the song "${song.title}" by the artist "${song.artist}". Return only the search query text, nothing else.`;
     
     let searchQuery;
     try {
-      // FIX: Use the object-based request format and specify the API version
-      const result = await model.generateContent({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      }, { apiVersion: 'v1' });
-
+      // Use the simple generateContent method without API version specification
+      const result = await model.generateContent(prompt);
       const response = await result.response;
       searchQuery = response.text().trim();
 
