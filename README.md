@@ -2,8 +2,6 @@
 
 Sonore is a modern, lightweight music streaming application designed to let users discover, play, and curate music playlists. It combines a clean UI with performant back-end services to deliver low-latency playback and an easy-to-use experience for listeners and curators.
 
-> Note: This README is a general template. If your repository contains a front-end, back-end, mobile client, or multiple services, please adapt the commands and environment variables to match the actual folder structure and technologies used.
-
 ## Table of contents
 
 - Project overview
@@ -48,12 +46,12 @@ This repository contains the source code and configuration to run Sonore locally
 
 ## Tech stack (suggested)
 
-- Front-end: React / Next.js / Vue.js (choose as implemented)
-- Back-end: Node.js + Express / Fastify (or another server framework)
-- Database: PostgreSQL (or MongoDB)
-- Media storage / streaming: Cloud Storage (S3, GCS) or self-hosted object store
-- Authentication: JWT or OAuth2
-- Dev tooling: Docker, ESLint, Prettier, Jest / Vitest
+- Front-end: React
+- Back-end: Node.js + Express 
+- Database: MongoDB
+- Media storage / streaming: Cloudinary
+- Authentication: JWT and Oauth2
+- Dev tooling: ESLint, Prettier
 
 Adjust this section to reflect the actual technologies used in this repository.
 
