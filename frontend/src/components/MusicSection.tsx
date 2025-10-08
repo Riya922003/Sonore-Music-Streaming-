@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 import apiClient from '../api';
 import { usePlayer } from '../contexts/PlayerContext';
 
@@ -236,7 +238,30 @@ const MusicSection: React.FC<MusicSectionProps> = ({ title, fetchUrl, items, typ
     return (
       <section className="mb-12">
         <h2 className="text-2xl font-bold text-white mb-6">{title}</h2>
-        <div className="text-gray-400 text-center py-8">Loading...</div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div key={index} className="bg-gray-800/50 p-4 rounded-lg">
+              <Skeleton 
+                height={160} 
+                className="mb-3 rounded-lg"
+                baseColor="#374151"
+                highlightColor="#4b5563"
+              />
+              <Skeleton 
+                height={20} 
+                className="mb-2"
+                baseColor="#374151"
+                highlightColor="#4b5563"
+              />
+              <Skeleton 
+                height={16} 
+                width="70%"
+                baseColor="#374151"
+                highlightColor="#4b5563"
+              />
+            </div>
+          ))}
+        </div>
       </section>
     );
   }

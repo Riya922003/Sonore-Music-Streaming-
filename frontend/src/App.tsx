@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import { SkeletonTheme } from 'react-loading-skeleton';
 import Sidebar from './components/Sidebar.tsx';
 import TopNav from './components/TopNav.tsx';
 import MainContent from './components/MainContent.tsx';
@@ -41,8 +43,9 @@ function App() {
   }, [openSearch]);
 
   return (
-    <Router>
-      <div className="App min-h-screen bg-black p-4 overflow-hidden">
+    <SkeletonTheme baseColor="#374151" highlightColor="#4b5563">
+      <Router>
+        <div className="App min-h-screen bg-black p-4 overflow-hidden">
         {/* Fixed Sidebar */}
         <Sidebar isCollapsed={isSidebarCollapsed} onToggle={toggleSidebar} />
         
@@ -82,8 +85,34 @@ function App() {
         
         {/* Blend Modal */}
         {isBlendModalOpen && <BlendModal isOpen={isBlendModalOpen} onClose={closeBlendModal} />}
-      </div>
-    </Router>
+        
+        {/* Toast Notifications */}
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#1f2937',
+              color: '#fff',
+              border: '1px solid #374151',
+            },
+            success: {
+              iconTheme: {
+                primary: '#10b981',
+                secondary: '#fff',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
+        </div>
+      </Router>
+    </SkeletonTheme>
   );
 }
 

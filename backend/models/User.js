@@ -26,6 +26,11 @@ const userSchema = new mongoose.Schema({
     type: [mongoose.Schema.Types.ObjectId],
     default: []
   },
+  recentlyPlayed: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'Song',
+    default: []
+  },
   playlists: {
     type: [String],
     default: []

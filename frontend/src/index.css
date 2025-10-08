@@ -295,3 +295,12 @@
     width: 4rem !important;
   }
 }
+
+/* React Loading Skeleton Dark Theme */
+.react-loading-skeleton {
+  --base-color: #374151;
+  --highlight-color: #4b5563;
+  --animation-duration: 1.5s;
+  --animation-direction: normal;
+  --pseudo-element-display: block;
+}

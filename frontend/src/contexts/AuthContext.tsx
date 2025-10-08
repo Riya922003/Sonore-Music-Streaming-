@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
+import toast from 'react-hot-toast';
 import apiClient from '../api';
 
 // User interface
@@ -170,12 +171,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (isLiked) {
         // Remove from liked songs
         await apiClient.delete(`/api/me/likes/${songId}`);
+        toast.success('Song removed from liked songs!');
       } else {
         // Add to liked songs
         await apiClient.post(`/api/me/likes/${songId}`);
+        toast.success('Song liked!');
       }
     } catch (error) {
       console.error('Error toggling like:', error);
+      
+      // Show error toast
+      toast.error('Failed to update liked songs. Please try again.');
       
       // Revert local state on API error
       setUser(prev => {
