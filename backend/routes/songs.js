@@ -308,7 +308,7 @@ Return only the search query text.`;
         return res.status(500).json({ success: false, message: 'GEMINI_API_KEY not configured' });
       }
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
       const result = await model.generateContent(prompt);
       const response = await result.response;
       aiQuery = (response && response.text && response.text().trim()) || '';
@@ -375,6 +375,65 @@ Return only the search query text.`;
   } catch (error) {
     console.error('Unexpected error in video route:', error);
     return res.status(500).json({ success: false, message: 'An unexpected error occurred while fetching video' });
+  }
+});
+
+// GET insight for a song using Gemini
+router.get('/:id/insights', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // 1. Fetch song details (title and artist)
+    let song;
+    try {
+      song = await Song.findById(id).select('title artist');
+    } catch (dbErr) {
+      console.error('Database error while fetching song for insights:', dbErr);
+      return res.status(500).json({ success: false, message: 'Database error while fetching song.' });
+    }
+
+    if (!song) {
+      return res.status(404).json({ success: false, message: 'Song not found' });
+    }
+
+    const title = (song.title || '').trim();
+    const artist = (song.artist || '').trim();
+
+    // 2. Ensure API key is configured
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ success: false, message: 'GEMINI_API_KEY not configured' });
+    }
+
+    // 3. Build a friendly, detailed multi-line prompt asking for one short interesting fact (2-3 sentences max)
+    const prompt = `You are a friendly and knowledgeable music expert. Provide exactly one short, interesting fact (2-3 sentences max) about the song below. The fact can be about the song's production, lyrics, cultural impact, chart performance, or awards. Keep the tone conversational, concise, and engaging. Do NOT include disclaimers, sources, or extra commentary — only the single fact.
+
+Song title: "${title}"
+Artist: "${artist}"
+
+Return only the fact text.`;
+
+    // 4. Call Gemini to generate the insight
+    try {
+      const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash', apiVersion: 'v1' });
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const insightText = (response && response.text && response.text().trim()) || '';
+
+      if (!insightText) {
+        console.error('Gemini returned empty insight for song:', id);
+        return res.status(500).json({ success: false, message: 'AI returned no insight for this song.' });
+      }
+
+      return res.status(200).json({ insight: insightText });
+    } catch (aiErr) {
+      console.error('Gemini generation error for insights:', aiErr);
+      return res.status(500).json({ success: false, message: 'Failed to generate insight from AI.' });
+    }
+
+  } catch (error) {
+    console.error('Unexpected error in insights route:', error);
+    return res.status(500).json({ success: false, message: 'An unexpected error occurred while fetching insight.' });
   }
 });
 

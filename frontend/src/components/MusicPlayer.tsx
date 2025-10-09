@@ -1,10 +1,11 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Repeat, Plus, Heart, Film } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Repeat, Plus, Heart, Film, Lightbulb } from 'lucide-react';
 import { usePlayer } from '../contexts/PlayerContext';
 import { useUI } from '../contexts/UIContext';
 import { useAuth } from '../contexts/AuthContext';
 import ElasticSlider from './ElasticSlider';
 import apiClient from '../api';
+import InsightsModal from './InsightsModal';
 
 const MusicPlayer: React.FC = () => {
   const { currentSong, isPlaying, togglePlayPause, playNext, playPrevious } = usePlayer();
@@ -16,6 +17,9 @@ const MusicPlayer: React.FC = () => {
   const [volume, setVolume] = useState<number>(1);
   const [repeat, setRepeat] = useState<boolean>(false);
   const [usingFallback, setUsingFallback] = useState<boolean>(false);
+  const [isInsightsModalOpen, setIsInsightsModalOpen] = useState<boolean>(false);
+  const [insightText, setInsightText] = useState<string>('');
+  const [isInsightLoading, setIsInsightLoading] = useState<boolean>(false);
   const demoTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const historyLoggedRef = useRef<string | null>(null); // Track which song has had its history logged
 
@@ -244,6 +248,29 @@ const MusicPlayer: React.FC = () => {
     }
   };
 
+  // Fetch insight from backend and open modal
+  const handleFetchInsight = async () => {
+    if (!currentSong) return;
+
+    setIsInsightLoading(true);
+    setIsInsightsModalOpen(true);
+    setInsightText('');
+
+    try {
+      const response = await apiClient.get(`/api/songs/${currentSong._id}/insights`);
+      if (response && response.data && response.data.insight) {
+        setInsightText(response.data.insight);
+      } else {
+        setInsightText('No insight available for this song.');
+      }
+    } catch (err) {
+      console.error('Error fetching song insight:', err);
+      setInsightText('Failed to load insight.');
+    } finally {
+      setIsInsightLoading(false);
+    }
+  };
+
   // Don't render if no current song
   if (!currentSong) {
     return null;
@@ -302,6 +329,14 @@ const MusicPlayer: React.FC = () => {
                   title="Add to playlist"
                 >
                   <Plus size={14} />
+                </button>
+                {/* Insights button */}
+                <button
+                  onClick={handleFetchInsight}
+                  className="text-gray-400 hover:text-white transition-colors p-1 rounded hover:bg-gray-700"
+                  title="Song insights"
+                >
+                  <Lightbulb size={14} />
                 </button>
                 {usingFallback && (
                   <span className="text-xs bg-yellow-600 text-yellow-100 px-1 rounded">DEMO</span>
@@ -452,6 +487,13 @@ const MusicPlayer: React.FC = () => {
           transform: scale(1.2);
         }
       `}</style>
+      {/* Insights modal */}
+      <InsightsModal
+        isOpen={isInsightsModalOpen}
+        onClose={() => setIsInsightsModalOpen(false)}
+        insight={insightText}
+        isLoading={isInsightLoading}
+      />
     </>
   );
 };
