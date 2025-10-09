@@ -27,6 +27,7 @@ interface PlayerContextType {
   togglePlayPause: () => void;
   playNext: () => void;
   playPrevious: () => void;
+  clearPlayer: () => void;
 }
 
 // Create the context
@@ -78,6 +79,14 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
     setIsPlaying(true);
   };
 
+  // Function to clear the player (stop and remove current song)
+  const clearPlayer = () => {
+    setCurrentSong(null);
+    setIsPlaying(false);
+    setQueue([]);
+    setCurrentQueueIndex(0);
+  };
+
   // Context value
   const value: PlayerContextType = {
     currentSong,
@@ -88,6 +97,8 @@ export const PlayerProvider: React.FC<PlayerProviderProps> = ({ children }) => {
     togglePlayPause,
     playNext,
     playPrevious
+    ,
+    clearPlayer
   };
 
   return (

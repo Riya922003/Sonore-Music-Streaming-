@@ -22,8 +22,8 @@ const TopNav: React.FC = () => {
         {/* Left spacer */}
         <div className="flex-1 min-w-0"></div>
         
-        {/* Search Bar - Centered */}
-        <div className="flex-2 max-w-sm mx-4 min-w-0">
+  {/* Search Bar - Centered */}
+  <div className="flex-1 max-w-sm mx-4 min-w-0">
           <div className="relative cursor-pointer" onClick={openSearch}>
             <Search size={18} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 sm:w-5 sm:h-5" />
             <input

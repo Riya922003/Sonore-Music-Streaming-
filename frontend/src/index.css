@@ -14,10 +14,18 @@
     background-color: #000000;
     color: #cccccc;
     overflow-x: hidden;
+    height: 100%;
+    overflow: hidden; /* ensure no browser scrollbar */
   }
   
   html {
     scroll-behavior: smooth;
+    height: 100%;
+  }
+
+  /* Ensure the app root fills the viewport so internal scrolling works correctly */
+  #root {
+    height: 100%;
   }
 }
 
