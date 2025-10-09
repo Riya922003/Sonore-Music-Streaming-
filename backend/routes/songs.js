@@ -404,13 +404,13 @@ router.get('/:id/insights', authMiddleware, async (req, res) => {
       return res.status(500).json({ success: false, message: 'GEMINI_API_KEY not configured' });
     }
 
-    // 3. Build a friendly, detailed multi-line prompt asking for one short interesting fact (2-3 sentences max)
-    const prompt = `You are a friendly and knowledgeable music expert. Provide exactly one short, interesting fact (2-3 sentences max) about the song below. The fact can be about the song's production, lyrics, cultural impact, chart performance, or awards. Keep the tone conversational, concise, and engaging. Do NOT include disclaimers, sources, or extra commentary — only the single fact.
+  // 3. Build a detailed prompt: act as an engaging music historian and produce a single paragraph (100-150 words)
+  const prompt = `You are an engaging, well-informed music historian. Compose a single, well-written paragraph (about 100-150 words) that serves as a "Song Insight" for the song below. The paragraph should succinctly cover several interesting points: the song's creation and production (who was involved, notable collaborators or production details if known), the story or meaning behind the lyrics, the song's cultural or social impact (how it resonated with listeners, influenced a scene, or reflected trends), and any notable awards, chart milestones, or recognitions. Use a warm, authoritative, and accessible tone. Do NOT include bullet points, lists, sources, or extra commentary — return only one continuous paragraph as the insight.
 
 Song title: "${title}"
 Artist: "${artist}"
 
-Return only the fact text.`;
+Return only the single-paragraph insight (100-150 words).`;
 
     // 4. Call Gemini to generate the insight
     try {
