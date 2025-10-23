@@ -6,7 +6,10 @@ module.exports = (req, res, next) => {
 
   // 2. Check if no token is provided
   if (!token) {
-    return res.status(401).json({ message: "No token, authorization denied." });
+    // Return a mindful, user-facing message instead of a technical token error.
+    // This keeps the UI friendly when users try to access features that require login
+    // (for example, generating AI insights).
+    return res.status(401).json({ message: "Log in to see crazy insights." });
   }
 
   try {
@@ -21,6 +24,8 @@ module.exports = (req, res, next) => {
   } catch (error) {
     // 6. Handle invalid token
     console.error("Token verification error:", error.message);
-    res.status(401).json({ message: "Token is not valid." });
+    // For invalid tokens, respond with the same friendly message so the UI can
+    // present a consistent, non-technical prompt to users.
+    res.status(401).json({ message: "Log in to see crazy insights." });
   }
 };

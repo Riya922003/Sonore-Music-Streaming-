@@ -378,6 +378,107 @@ Return only the search query text.`;
   }
 });
 
+// GET streamable lyrics for a song using Server-Sent Events (SSE)
+router.get('/:id/lyrics/stream', authMiddleware, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Set SSE headers
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+
+    // Ensure the connection stays open for SSE
+    res.flushHeaders && res.flushHeaders();
+
+    // Fetch song
+    const song = await Song.findById(id);
+    if (!song) {
+      // send an SSE error event then close
+      try {
+        res.write(`event: error\ndata: ${JSON.stringify({ message: 'Song not found' })}\n\n`);
+      } catch (e) {}
+      return res.end();
+    }
+
+    // If lyrics already exist in DB, send them in a single data event and close
+    if (song.lyrics && song.lyrics.trim() !== '') {
+      try {
+        res.write(`data: ${JSON.stringify({ lyrics: song.lyrics })}\n\n`);
+      } catch (e) {
+        console.error('Error writing existing lyrics SSE:', e);
+      }
+      return res.end();
+    }
+
+    // No lyrics: initialize Gemini streaming
+    if (!process.env.GEMINI_API_KEY) {
+      res.write(`event: error\ndata: ${JSON.stringify({ message: 'GEMINI_API_KEY not configured' })}\n\n`);
+      return res.end();
+    }
+
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
+
+    // Build a detailed prompt for lyrics generation
+    const title = (song.title || '').trim();
+    const artist = (song.artist || '').trim();
+    const prompt = `You are a highly skilled songwriter and lyricist. Write full song lyrics for the following song. Keep the style consistent, include verses, a chorus, and bridge if appropriate, and make sure the lyrics are original and suitable for general audiences. Preserve the song title and artist references only for context, but do not include extra commentary. Return only the lyrics text (no explanations or headers).\n\nSong title: "${title}"\nArtist: "${artist}"\n\nLyrics:`;
+
+    let accumulated = '';
+
+    try {
+      const stream = await model.streamGenerateContent({
+        prompt,
+        // keep defaults for safety; you can tune temperature/length if needed
+      });
+
+      // stream.response is an async iterator of chunks
+      for await (const chunk of stream.response) {
+        try {
+          const text = (chunk && chunk.text) ? chunk.text() : (chunk && chunk.delta ? chunk.delta : '');
+          if (!text) continue;
+
+          // Immediately send the chunk to the client as an SSE data event
+          // We JSON-encode the payload to avoid newline issues
+          res.write(`data: ${JSON.stringify({ chunk: text })}\n\n`);
+
+          // Accumulate for saving later
+          accumulated += text;
+        } catch (innerErr) {
+          console.error('Error while streaming chunk to client:', innerErr);
+        }
+      }
+
+      // After stream finishes, save accumulated lyrics to DB
+      try {
+        song.lyrics = accumulated;
+        await song.save();
+      } catch (saveErr) {
+        console.error('Failed to save generated lyrics:', saveErr);
+        // Inform client but keep going to end the stream
+        res.write(`event: error\ndata: ${JSON.stringify({ message: 'Failed to save lyrics' })}\n\n`);
+      }
+
+      // Signal end-of-stream to client (optional) and close
+      res.write(`event: done\ndata: ${JSON.stringify({ message: 'finished' })}\n\n`);
+      return res.end();
+
+    } catch (aiErr) {
+      console.error('Error during Gemini streaming:', aiErr);
+      res.write(`event: error\ndata: ${JSON.stringify({ message: 'AI streaming error' })}\n\n`);
+      return res.end();
+    }
+
+  } catch (error) {
+    console.error('Unexpected error in lyrics stream route:', error);
+    try {
+      res.write(`event: error\ndata: ${JSON.stringify({ message: 'Unexpected server error' })}\n\n`);
+    } catch (e) {}
+    return res.end();
+  }
+});
+
 // GET insight for a song using Gemini
 router.get('/:id/insights', authMiddleware, async (req, res) => {
   try {

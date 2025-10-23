@@ -23,6 +23,7 @@ import { useUI } from './contexts/UIContext';
 function App() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { currentSong } = usePlayer();
+  const { isNowPlayingPanelOpen } = useUI();
   const { isAuthModalOpen } = useAuth();
   const { isSearchOpen, openSearch } = useSearch();
   const { isBlendModalOpen, closeBlendModal, isVideoModalOpen, currentVideoId, closeVideoModal } = useUI();
@@ -57,7 +58,7 @@ function App() {
           <div
             className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out h-screen overflow-y-auto ${
               isSidebarCollapsed ? 'pl-24' : 'pl-72'
-            } ${currentSong ? 'pr-96' : 'pr-8'}`}
+            } ${currentSong && isNowPlayingPanelOpen ? 'pr-96' : 'pr-8'}`}
           >
             {/* Top Navigation */}
             <TopNav />
@@ -78,7 +79,7 @@ function App() {
           </div>
 
           {/* Right: Now Playing view (appears/disappears based on currentSong) as sibling */}
-          {currentSong && (
+          {currentSong && isNowPlayingPanelOpen && (
             <div className="flex-shrink-0 ml-4">
               <NowPlayingView key={currentSong._id} />
             </div>

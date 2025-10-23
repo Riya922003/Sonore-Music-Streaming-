@@ -1,14 +1,14 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Repeat, Plus, Heart, Film, Lightbulb } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Repeat, Plus, Heart, Film, Lightbulb, Music } from 'lucide-react';
 import { usePlayer } from '../contexts/PlayerContext';
 import { useUI } from '../contexts/UIContext';
 import { useAuth } from '../contexts/AuthContext';
 import ElasticSlider from './ElasticSlider';
 import apiClient from '../api';
-import InsightsModal from './InsightsModal';
+import LyricsView from './LyricsView';
 
 const MusicPlayer: React.FC = () => {
-  const { currentSong, isPlaying, togglePlayPause, playNext, playPrevious } = usePlayer();
+  const { currentSong, isPlaying, togglePlayPause, playNext, playPrevious, clearPlayer } = usePlayer();
   const { openAddToPlaylistModal, openVideoModal } = useUI();
   const { user, toggleLike } = useAuth();
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -17,9 +17,9 @@ const MusicPlayer: React.FC = () => {
   const [volume, setVolume] = useState<number>(1);
   const [repeat, setRepeat] = useState<boolean>(false);
   const [usingFallback, setUsingFallback] = useState<boolean>(false);
-  const [isInsightsModalOpen, setIsInsightsModalOpen] = useState<boolean>(false);
-  const [insightText, setInsightText] = useState<string>('');
-  const [isInsightLoading, setIsInsightLoading] = useState<boolean>(false);
+  
+  // Insights are shown in the Now Playing sidebar; requesting is done via UI context
+  const [isLyricsOpen, setIsLyricsOpen] = useState<boolean>(false);
   const demoTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const historyLoggedRef = useRef<string | null>(null); // Track which song has had its history logged
 
@@ -249,26 +249,14 @@ const MusicPlayer: React.FC = () => {
   };
 
   // Fetch insight from backend and open modal
+  const { requestInsight, openNowPlayingPanel } = useUI();
+
   const handleFetchInsight = async () => {
     if (!currentSong) return;
 
-    setIsInsightLoading(true);
-    setIsInsightsModalOpen(true);
-    setInsightText('');
-
-    try {
-      const response = await apiClient.get(`/api/songs/${currentSong._id}/insights`);
-      if (response && response.data && response.data.insight) {
-        setInsightText(response.data.insight);
-      } else {
-        setInsightText('No insight available for this song.');
-      }
-    } catch (err) {
-      console.error('Error fetching song insight:', err);
-      setInsightText('Failed to load insight.');
-    } finally {
-      setIsInsightLoading(false);
-    }
+    // Request the Now Playing sidebar to open and refresh its insight
+    openNowPlayingPanel();
+    requestInsight();
   };
 
   // Don't render if no current song
@@ -337,6 +325,14 @@ const MusicPlayer: React.FC = () => {
                   title="Song insights"
                 >
                   <Lightbulb size={14} />
+                </button>
+                {/* Lyrics button */}
+                <button
+                  onClick={() => setIsLyricsOpen(true)}
+                  className="text-gray-400 hover:text-white transition-colors p-1 rounded hover:bg-gray-700"
+                  title="Show lyrics"
+                >
+                  <Music size={14} />
                 </button>
                 {usingFallback && (
                   <span className="text-xs bg-yellow-600 text-yellow-100 px-1 rounded">DEMO</span>
@@ -454,6 +450,20 @@ const MusicPlayer: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Small close button for the Now Playing sidebar (does not clear player) */}
+        <div className="absolute right-6 top-4">
+          <button
+            onClick={() => clearPlayer()}
+            className="text-gray-400 hover:text-white p-1 rounded bg-transparent"
+            aria-label="Close player"
+            title="Close player"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Custom slider styles */}
@@ -487,13 +497,27 @@ const MusicPlayer: React.FC = () => {
           transform: scale(1.2);
         }
       `}</style>
-      {/* Insights modal */}
-      <InsightsModal
-        isOpen={isInsightsModalOpen}
-        onClose={() => setIsInsightsModalOpen(false)}
-        insight={insightText}
-        isLoading={isInsightLoading}
-      />
+      {/* Insights are displayed in the Now Playing sidebar; no modal needed */}
+
+      {/* Lyrics modal */}
+      {isLyricsOpen && currentSong && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black opacity-60" onClick={() => setIsLyricsOpen(false)} />
+          <div className="relative z-50 w-[90vw] max-w-2xl bg-gray-900 text-white rounded shadow-lg overflow-hidden">
+            <div className="flex items-center justify-between p-3 border-b border-gray-800">
+              <h3 className="text-lg font-semibold">Lyrics — {currentSong.title}</h3>
+              <button onClick={() => setIsLyricsOpen(false)} className="text-gray-300 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-4 max-h-[70vh] overflow-y-auto">
+              <LyricsView song={currentSong} />
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

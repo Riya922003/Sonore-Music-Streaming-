@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { usePlayer } from '../contexts/PlayerContext';
+import { useUI } from '../contexts/UIContext';
 import apiClient from '../api';
 
 const NowPlayingView: React.FC = () => {
-  const { currentSong, clearPlayer } = usePlayer();
+  const { currentSong } = usePlayer();
+  const { closeNowPlayingPanel, insightRequestCounter } = useUI();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [insightText, setInsightText] = useState<string>('');
 
@@ -42,10 +44,11 @@ const NowPlayingView: React.FC = () => {
 
     fetchInsight();
 
+    // cleanup
     return () => {
       cancelled = true;
     };
-  }, [currentSong]);
+  }, [currentSong, insightRequestCounter]);
 
   if (!currentSong) return null;
 
@@ -55,8 +58,8 @@ const NowPlayingView: React.FC = () => {
       <div className="h-full overflow-y-auto scrollbar-hide py-6 px-4">
         <div className="flex justify-end">
           <button
-            aria-label="Close now playing"
-            onClick={() => clearPlayer()}
+            aria-label="Close now playing panel"
+            onClick={() => closeNowPlayingPanel()}
             className="text-gray-300 hover:text-white"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

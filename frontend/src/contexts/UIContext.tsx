@@ -27,6 +27,14 @@ interface UIContextType {
   currentVideoId: string;
   openVideoModal: (videoId: string) => void;
   closeVideoModal: () => void;
+  // Now playing side panel visibility
+  isNowPlayingPanelOpen: boolean;
+  openNowPlayingPanel: () => void;
+  closeNowPlayingPanel: () => void;
+  // Trigger to request insights in the Now Playing panel. Incrementing this
+  // value will notify consumers to re-fetch insight for the current song.
+  insightRequestCounter: number;
+  requestInsight: () => void;
 }
 
 // Create the context
@@ -45,6 +53,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
   const [isBlendModalOpen, setIsBlendModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [currentVideoId, setCurrentVideoId] = useState('');
+  const [isNowPlayingPanelOpen, setIsNowPlayingPanelOpen] = useState(true);
+  const [insightRequestCounter, setInsightRequestCounter] = useState(0);
 
   const openAddToPlaylistModal = (song: Song) => {
     setSongToAdd(song);
@@ -87,6 +97,11 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     setCurrentVideoId('');
   };
 
+  const openNowPlayingPanel = () => setIsNowPlayingPanelOpen(true);
+  const closeNowPlayingPanel = () => setIsNowPlayingPanelOpen(false);
+
+  const requestInsight = () => setInsightRequestCounter(c => c + 1);
+
   const value: UIContextType = {
     songToAdd,
     isAddToPlaylistModalOpen,
@@ -103,6 +118,11 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     currentVideoId,
     openVideoModal,
     closeVideoModal,
+    isNowPlayingPanelOpen,
+    openNowPlayingPanel,
+    closeNowPlayingPanel,
+    insightRequestCounter,
+    requestInsight,
   };
 
   return (
