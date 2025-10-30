@@ -205,9 +205,3 @@ This project is released under the MIT License. See LICENSE for details.
 Maintainer: Riya922003
 - GitHub: https://github.com/Riya922003
 
-If you want help tailoring this README to the exact structure and technologies of your repository, tell me:
-- Which folders are present (client, server, mobile, etc.)
-- The front-end and back-end frameworks used
-- Any environment variables or services required (database, storage)
-I can generate a README customized to the code in the repo, including exact commands and examples.
-```
