@@ -129,6 +129,10 @@ Contributions are welcome! Suggested workflow:
 Please follow the existing code style and add tests for new functionality. If you intend to make a large change, open an issue first to discuss the design.
 Open issues and feature requests are tracked in GitHub Issues. Please add ideas or request features there.
 
+## Test User Credentials
+- Email- test1@gmail.com
+- Password-Riya@2003
+
 ## License
 
 This project is released under the MIT License. See LICENSE for details.
