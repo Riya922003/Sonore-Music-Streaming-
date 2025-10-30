@@ -135,6 +135,6 @@ This project is released under the MIT License. See LICENSE for details.
 
 ## Contact
 
-Maintainer: Riya922003
+Maintainer: Riya Gupta
 - GitHub: https://github.com/Riya922003
 
