@@ -60,30 +60,24 @@ Adjust this section to reflect the actual technologies used in this repository.
 Prerequisites
 - Node.js (16+ recommended)
 - npm or yarn
-- Docker & Docker Compose (optional, for running database / services)
-
+  
 1. Clone the repository
    git clone https://github.com/Riya922003/Sonore-Music-Streaming-.git
    cd Sonore-Music-Streaming-
 
 2. Install dependencies
    - If the project is monorepo with folders like `client/` and `server/`, run installation in each folder:
-     cd client && npm install
-     cd ../server && npm install
+     cd frontend && npm install
+     cd backend && npm install
    - Otherwise from repo root:
      npm install
-
-3. Setup environment variables
-   - Copy the example env file and edit:
-     cp .env.example .env
-   - Populate required values (see "Environment variables" below).
-
+     
 4. Run services (local dev)
    - Start backend:
-     cd server
-     npm run dev
+     cd backend
+     node server.js
    - Start frontend:
-     cd client
+     cd frontend
      npm run dev
    Or, use the root dev command if provided:
      npm run dev
@@ -106,16 +100,6 @@ Build the application for production:
   npm run build
   npm run start
 
-Or use Docker for a containerized build:
-
-- Build images:
-  docker-compose build
-
-- Start services:
-  docker-compose up -d
-
-Refer to docker-compose.yml (if present) for details.
-
 ## Environment variables
 
 The application requires a set of environment variables to run. Example variables (adjust to your implementation):
@@ -132,20 +116,6 @@ The application requires a set of environment variables to run. Example variable
 
 Place sensitive values in `.env` and never commit them. Use .env.example to show names and expected format.
 
-## File structure (suggested)
-
-If your repo follows a common structure, it may look like:
-
-- client/ — Front-end app (React/Next/Vue)
-- server/ — API and streaming server
-- packages/ — Shared packages (optional)
-- scripts/ — Utility scripts and deployment helpers
-- docker-compose.yml
-- .env.example
-- README.md
-
-Update this section to match the actual structure of this repository.
-
 ## Contributing
 
 Contributions are welcome! Suggested workflow:
@@ -157,31 +127,6 @@ Contributions are welcome! Suggested workflow:
 5. Open a pull request describing the changes
 
 Please follow the existing code style and add tests for new functionality. If you intend to make a large change, open an issue first to discuss the design.
-
-## Deployment
-
-Common deployment approaches:
-- Deploy front-end static build to Vercel, Netlify, or S3 + CloudFront
-- Deploy back-end to Heroku, DigitalOcean App Platform, AWS ECS / EKS, or a VPS
-- Use managed databases (RDS, Cloud SQL) and object storage (S3/GCS) for media
-
-If this repo includes CI/CD configs (GitHub Actions, etc.), review `.github/workflows` for the deployment pipeline.
-
-## Roadmap
-
-Planned improvements:
-- Offline playback & caching
-- Collaborative playlists
-- Recommendations & personalized radio
-- Mobile apps (iOS/Android)
-- Monetization features (subscriptions, ads)
-
-Additional planned / upcoming features:
-- Blend playlists (improved controls and weighting for mixed playlists)
-- Focus queue enhancements (duration-based queue generation, smarter sampling)
-- Link songs / related content (deeper linking for remixes, videos, and artist pages)
-- AI Music Insights (coming soon): an AI-powered dashboard that will analyze tracks and listening patterns to provide insights such as mood, key, tempo, segment highlights, recommended playlists, and personalized analytics for creators and listeners.
-
 Open issues and feature requests are tracked in GitHub Issues. Please add ideas or request features there.
 
 ## License
