@@ -44,7 +44,7 @@ This repository contains the source code and configuration to run Sonore locally
 - Basic analytics (listening counts, favorites)
 - Extensible architecture for integrations (third-party catalogs, ads, social)
 
-## Tech stack (suggested)
+## Tech stack
 
 - Front-end: React
 - Back-end: Node.js + Express 
