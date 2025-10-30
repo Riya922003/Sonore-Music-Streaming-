@@ -158,18 +158,6 @@ Contributions are welcome! Suggested workflow:
 
 Please follow the existing code style and add tests for new functionality. If you intend to make a large change, open an issue first to discuss the design.
 
-## Tests
-
-Run tests with:
-- For server:
-  cd server
-  npm test
-- For client:
-  cd client
-  npm test
-
-Use `npm run test:watch` for interactive development if supported.
-
 ## Deployment
 
 Common deployment approaches:
